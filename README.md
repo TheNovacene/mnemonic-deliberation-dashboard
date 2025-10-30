@@ -69,12 +69,18 @@ mentimeter_demo.csv	Example live poll results
 
 Use the sidebar or file uploader to explore the dashboard instantly.
 
-📜 Licence
-Code: MIT License
-Content: CC BY-NC-SA 4.0
+📜 
+---
 
-© 2025 Kirstin Stevens · The Novacene
-For research collaborations or commercial use, contact:
+### ⚖️ Licence & Use
+
+This prototype and all associated intellectual property are © 2025 Kirstin Stevens · The Novacene.  
+All rights reserved.
+
+You may view and experiment with the dashboard for research or educational purposes, but no reuse, modification, or redistribution is permitted without written consent.  
+
+For collaboration, partnership, or licensing enquiries, please contact: 
+
 📩 hello@thenovacene.com
 
 🔗 Citation
