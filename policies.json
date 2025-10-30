@@ -1,0 +1,26 @@
+{
+  "EU_AI_ACT": {
+    "TRANSPARENCY_2A": {
+      "duty": "transparency",
+      "text": "Provide clear, accessible information about the AI system to affected persons.",
+      "synonyms": ["plain-language notice", "explainable to users", "clear model notice", "accessible info"]
+    },
+    "HUMAN_OVERSIGHT_3B": {
+      "duty": "human_oversight",
+      "text": "Ensure effective human oversight for AI decisions, including escalation routes.",
+      "synonyms": ["human-in-the-loop", "escalation path", "oversight by a person", "manual review"]
+    },
+    "DATA_GOVERNANCE_1C": {
+      "duty": "data_governance",
+      "text": "Maintain appropriate data governance, documentation and record-keeping including DPIA.",
+      "synonyms": ["DPIA", "data protection impact assessment", "model card", "records kept"]
+    }
+  },
+  "SCHOOL": {
+    "SAFEGUARDING_KCSIE": {
+      "duty": "safeguarding",
+      "text": "Act in line with KCSIE and safeguarding duties.",
+      "synonyms": ["KCSIE", "DSL", "safeguarding concern", "report to DSL"]
+    }
+  }
+}

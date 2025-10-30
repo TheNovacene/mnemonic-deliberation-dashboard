@@ -1,0 +1,36 @@
+{
+  "session_meta": {
+    "generated_at": "2025-10-30T22:53:04",
+    "turns": 48,
+    "speakers": 6
+  },
+  "metrics": {
+    "E": 0.5588398650179878,
+    "s": 0.2522,
+    "c2": 0.7887606417812705,
+    "I": 0.17868464334027978
+  },
+  "pp_delta": {
+    "TRANSPARENCY_2A": {
+      "duty": "transparency",
+      "status": "addressed",
+      "score": 0.95
+    },
+    "HUMAN_OVERSIGHT_3B": {
+      "duty": "human_oversight",
+      "status": "ambiguous",
+      "score": 0.4
+    },
+    "DATA_GOVERNANCE_1C": {
+      "duty": "data_governance",
+      "status": "ambiguous",
+      "score": 0.6
+    },
+    "SAFEGUARDING_KCSIE": {
+      "duty": "safeguarding",
+      "status": "ambiguous",
+      "score": 0.4
+    }
+  },
+  "mentimeter_ingested": true
+}

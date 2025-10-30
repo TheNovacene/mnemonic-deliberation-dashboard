@@ -1,0 +1,5 @@
+question,type,response_options,votes,top_result,timestamp
+How confident are you in the plain‑language notice?,scale,"1,2,3,4,5",32,4,2025-10-30 22:23:04
+Which risk worries you most?,multiple_choice,cognitive offloading; bias; privacy; none,32,privacy,2025-10-30 22:23:04
+Should there be an easy opt‑out?,yes_no,yes;no,32,yes,2025-10-30 22:23:04
+Who should be first on escalation?,wordcloud,"DSL, SLT, Teacher, Other",28,DSL,2025-10-30 22:23:04

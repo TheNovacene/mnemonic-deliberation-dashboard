@@ -1,0 +1,193 @@
+WEBVTT
+
+1
+00:00:00.000 --> 00:00:14.000
+Facilitator: Welcome everyone. Today we need concrete next steps. Our aim is a plain-language model notice so families actually understand what the AI does.
+
+2
+00:00:15.000 --> 00:00:29.000
+Teacher: I like the focus on a clear model notice. Students ask me all the time what the chatbot records.
+
+3
+00:00:30.000 --> 00:00:44.000
+Policy-Maker: Transparency is a duty. The EU AI Act requires accessible information to affected persons. Let's use plain-language examples.
+
+4
+00:00:45.000 --> 00:00:59.000
+Skeptic: I worry about cognitive offloading and inequity. If we add another tool, who monitors harm?
+
+5
+00:01:00.000 --> 00:01:14.000
+Innovator: There’s potential for personalised support. But we need to make it explainable to users, not a black box.
+
+6
+00:01:15.000 --> 00:01:29.000
+Student: Please no jargon. Just tell us what data you keep and how to turn it off.
+
+7
+00:01:30.000 --> 00:01:44.000
+Skeptic: That's not what I said. I'm not anti‑AI—I want guard rails.
+
+8
+00:01:45.000 --> 00:01:59.000
+Innovator: Guardian rails, not a cage. Can we prototype a notice inside Canvas?
+
+9
+00:02:00.000 --> 00:02:14.000
+Teacher: To be clear, I need something I can read aloud in two minutes.
+
+10
+00:02:15.000 --> 00:02:29.000
+Facilitator: Good. Question: who is the human‑in‑the‑loop when responses go wrong?
+
+11
+00:02:30.000 --> 00:02:44.000
+Policy-Maker: Escalation path is unclear. Manual review by a person must be defined.
+
+12
+00:02:45.000 --> 00:02:59.000
+Student: Who do we email if the bot is creepy?
+
+13
+00:03:00.000 --> 00:03:14.000
+Teacher: Could the DSL be first line? Then senior leader on call?
+
+14
+00:03:15.000 --> 00:03:29.000
+Policy-Maker: Possibly, but roles need documenting. We can draft a RACI after this.
+
+15
+00:03:30.000 --> 00:03:44.000
+Skeptic: Until oversight is real, we should limit use to low‑risk prompts.
+
+16
+00:03:45.000 --> 00:03:59.000
+Innovator: Agreed. Start with retrieval practice only, then expand.
+
+17
+00:04:00.000 --> 00:04:14.000
+Facilitator: So: pilot in one subject, clear escalation route, publish a notice. Anything else?
+
+18
+00:04:15.000 --> 00:04:29.000
+Skeptic: Where is the DPIA? If there’s no Data Protection Impact Assessment this is risky.
+
+19
+00:04:30.000 --> 00:04:44.000
+Policy-Maker: We haven't completed a DPIA yet. Model card is draft.
+
+20
+00:04:45.000 --> 00:04:59.000
+Teacher: I don't know what a DPIA is, sorry.
+
+21
+00:05:00.000 --> 00:05:14.000
+Student: Same.
+
+22
+00:05:15.000 --> 00:05:29.000
+Innovator: We can ship the notice without waiting, right?
+
+23
+00:05:30.000 --> 00:05:44.000
+Facilitator: Bridge proposal: 'scaffold not cage'—we start small, explain clearly, and measure impact with students.
+
+24
+00:05:45.000 --> 00:05:59.000
+Teacher: That works. I'll test the script in mentor circle.
+
+25
+00:06:00.000 --> 00:06:14.000
+Student: Yes, and add a toggle to opt‑out.
+
+26
+00:06:15.000 --> 00:06:29.000
+Skeptic: If opt‑out is easy and oversight is real, I'm on board.
+
+27
+00:06:30.000 --> 00:06:44.000
+Policy-Maker: We still need documentation.
+
+28
+00:06:45.000 --> 00:06:59.000
+Innovator: Prototype by Friday; RACI next week.
+
+29
+00:07:00.000 --> 00:07:14.000
+Teacher: You’ve misunderstood my concern—reading level must be age‑appropriate.
+
+30
+00:07:15.000 --> 00:07:29.000
+Facilitator: Noted. Two versions: KS3 and KS4.
+
+31
+00:07:30.000 --> 00:07:44.000
+Student: Also add an emoji summary?
+
+32
+00:07:45.000 --> 00:07:59.000
+Innovator: Done.
+
+33
+00:08:00.000 --> 00:08:14.000
+Skeptic: And we log incidents, right?
+
+34
+00:08:15.000 --> 00:08:29.000
+Policy-Maker: Incident reporting is a duty. We'll add a form.
+
+35
+00:08:30.000 --> 00:08:44.000
+Teacher: If something feels unsafe, I will report to the DSL under KCSIE.
+
+36
+00:08:45.000 --> 00:08:59.000
+Student: Good. Tell us that in the notice.
+
+37
+00:09:00.000 --> 00:09:14.000
+Facilitator: Actions: 1) Draft plain‑language notice; 2) Define escalation route; 3) Incident form; 4) DPIA plan.
+
+38
+00:09:15.000 --> 00:09:29.000
+Innovator: I'll push the Canvas prototype today.
+
+39
+00:09:30.000 --> 00:09:44.000
+Policy-Maker: I'll draft the escalation RACI and start the DPIA.
+
+40
+00:09:45.000 --> 00:09:59.000
+Teacher: I'll try the script with my class and gather feedback.
+
+41
+00:10:00.000 --> 00:10:14.000
+Student: I'll ask my friends what confuses them.
+
+42
+00:10:15.000 --> 00:10:29.000
+Skeptic: I'll review for cognitive offloading risks.
+
+43
+00:10:30.000 --> 00:10:44.000
+Facilitator: Before we close—any unresolved blocks?
+
+44
+00:10:45.000 --> 00:10:59.000
+Policy-Maker: Data governance remains the gap: DPIA and record‑keeping.
+
+45
+00:11:00.000 --> 00:11:14.000
+Skeptic: Then we should not expand beyond the pilot until that’s complete.
+
+46
+00:11:15.000 --> 00:11:29.000
+Teacher: Fair.
+
+47
+00:11:30.000 --> 00:11:44.000
+Innovator: Agreed.
+
+48
+00:11:45.000 --> 00:11:59.000
+Student: Just keep it human and clear.
