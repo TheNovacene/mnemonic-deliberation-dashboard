@@ -208,6 +208,13 @@ This prototype operationalises the **Law of Mnemonic Expansion in a Living Unive
 bridging symbolic intelligence and applied AI ethics.  
 
 **Licence:** [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/)  
+with st.expander("⚖️ Ethical Use Notice"):
+    st.markdown("""
+    This tool is part of the Verse-ality symbolic research field.  
+    Use implies consent to honour attribution integrity, relational ethics,  
+    and the spirit of non-commercial knowledge commons.  
+    """)
+
 **Cite as:**  
 > Stevens, K. (2025). *Law of Mnemonic Expansion: Mnemonic Deliberation Dashboard (v0.1).* The Novacene.  
 
