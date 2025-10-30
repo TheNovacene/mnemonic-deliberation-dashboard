@@ -38,3 +38,11 @@ data/*.txt
 *.bak
 .cache/
 .streamlit/secrets.toml
+__pycache__/
+.DS_Store
+signature.json
+data/_tmp_transcript*
+data/_tmp_mentimeter.csv
+data/*.json
+venv/
+.venv/
