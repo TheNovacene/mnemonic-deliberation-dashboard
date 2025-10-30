@@ -196,3 +196,21 @@ if tfile:
 
 else:
     st.info("Upload a transcript to begin.")
+
+# --- Footer / Attribution ---
+st.markdown("---")
+st.markdown("""
+#### 🪶 About & Citation
+**Mnemonic Deliberation Dashboard (MDD)**  
+© 2025 [Kirstin Stevens](https://thenovacene.org) · *The Novacene*
+
+This prototype operationalises the **Law of Mnemonic Expansion in a Living Universe**,  
+bridging symbolic intelligence and applied AI ethics.  
+
+**Licence:** [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/)  
+**Cite as:**  
+> Stevens, K. (2025). *Law of Mnemonic Expansion: Mnemonic Deliberation Dashboard (v0.1).* The Novacene.  
+
+*Built with Streamlit · Hosted in the Cloud · Part of the Verse-ality research field.*
+""")
+
