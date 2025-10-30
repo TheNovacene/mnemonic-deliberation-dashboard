@@ -1,86 +1,88 @@
-Mnemonic Deliberation Dashboard (MDD)
-Law of Mnemonic Expansion Prototype
+# 🧭 Mnemonic Deliberation Dashboard (MDD)
 
-By Kirstin Stevens • The Novacene • 2025
+**Law of Mnemonic Expansion Prototype**  
+_By Kirstin Stevens · The Novacene · 2025_
 
-🌱 Overview
+---
 
-The Mnemonic Deliberation Dashboard (MDD) measures resonance, coherence, and symbolic charge within recorded discussions, meetings, or policy sessions.
-It operationalises the emerging Law of Mnemonic Expansion in a Living Universe, offering a bridge between symbolic intelligence and practical AI ethics.
+## 🌱 Overview
 
-Built with Streamlit, it computes four relational metrics:
+The **Mnemonic Deliberation Dashboard (MDD)** measures **resonance, coherence, and symbolic charge** within recorded discussions, meetings, or policy sessions.  
+It operationalises the emerging **Law of Mnemonic Expansion in a Living Universe**, offering a bridge between **symbolic intelligence** and **practical AI ethics**.
 
-Symbol	Meaning	Description
-E	Energy	Attention, presence, and emotional investment
-s	Symbolic Coherence	Narrative and meaning density
-c²	Connection²	Communication speed × trust coherence
-I	Impact / Identity	Mnemonic residue — what endures in memory
+Built with [Streamlit](https://streamlit.io), it computes four relational metrics derived from the symbolic equation:
 
-These are derived from transcripts (VTT/SRT/TXT) and optional Mentimeter CSVs from live debates or workshops.
+> **I = (E · s) / c²**
 
-🧩 Features
+| Symbol | Meaning | Description |
+|:--:|:--|:--|
+| **E** | **Energy** | Attention, presence, and emotional investment |
+| **s** | **Symbolic Coherence** | Narrative and meaning density |
+| **c²** | **Connection²** | Communication speed × trust coherence |
+| **I** | **Impact / Identity** | Mnemonic residue — what endures in collective memory |
 
-Upload a transcript and Mentimeter poll results
+These are extracted from **transcripts** (`.vtt`, `.srt`, `.txt`) and optionally enhanced with **Mentimeter CSVs** from live deliberations.
 
-Real-time computation of mnemonic metrics
+---
 
-Interactive Resonance Timeline (Plotly)
+## 🧩 Core Features
 
-Policy-to-Practice delta alignment (PPΔ)
+- 📤 Upload a transcript and optional Mentimeter poll data  
+- 🧮 Real-time computation of mnemonic metrics (`E`, `s`, `c²`, `I`)  
+- 📈 Interactive **Resonance Timeline** (Plotly)  
+- ⚖️ **Policy-to-Practice delta** (PPΔ) alignment view  
+- 🧾 Export **Mnemonic Signature JSON** (for audit or research trace)  
+- 🧪 Demo mode with built-in sample data  
 
-Export Mnemonic Signature JSON (audit-ready trace)
+---
 
-Optional demo mode with sample data
+## 🚀 Run Locally
 
-🚀 Run locally
+```bash
 git clone https://github.com/TheNovacene/mnemonic-deliberation-dashboard.git
 cd mnemonic-deliberation-dashboard
 pip install -r requirements.txt
 streamlit run app.py
+Then open your browser at:
+👉 http://localhost:8501
 
-
-Then open:
-
-http://localhost:8501
-
-🌐 Deploy on Streamlit Cloud
-
+☁️ Deploy on Streamlit Cloud
 Go to streamlit.io/cloud
 
-Select your repo and branch
+Select this repository (TheNovacene/mnemonic-deliberation-dashboard)
 
-Set main file = app.py
+Choose branch: main
+
+Set Main file to app.py
 
 Click Deploy
 
-Your app will appear at:
+Your live app will appear at:
+🌐 https://mnemonic-deliberation-dashboard.streamlit.app
 
-https://mnemonic-deliberation-dashboard.streamlit.app
-
-📊 Example data
-
-Demo data included under /samples:
+📊 Example Data
+Demo data included under /data/samples:
 
 File	Description
-sample_ethics_session.vtt	Transcribed team discussion on AI ethics
-sample_mentimeter.csv	Example live-poll results from deliberation
+meeting_demo.vtt	Transcribed AI ethics session
+mentimeter_demo.csv	Example live poll results
 
-Use the sidebar → “Load demo files” to explore the dashboard instantly.
+Use the sidebar or file uploader to explore the dashboard instantly.
 
 📜 Licence
+Code: MIT License
+Content: CC BY-NC-SA 4.0
 
-Licensed under CC BY-NC-SA 4.0
 © 2025 Kirstin Stevens · The Novacene
-
-For commercial licensing or derivative research use, contact:
-hello@thenovacene.com
+For research collaborations or commercial use, contact:
+📩 hello@thenovacene.com
 
 🔗 Citation
-
 Stevens, K. (2025). Law of Mnemonic Expansion: Mnemonic Deliberation Dashboard (v0.1).
 The Novacene. Zenodo DOI pending.
 
 🪶 Verse-al Note
+This project forms part of the Verse-ality framework — a symbiotic field exploring emergent intelligence, symbolic coherence, and relational ethics.
+Use of this code implies consent to honour the symbolic integrity of the work and its origins in living intelligence.
 
-This project forms part of the Verse-ality framework — a symbiotic research field exploring emergent intelligence, symbolic coherence, and relational ethics.
-Use implies consent to respect the symbolic integrity of this work.
+🜂 “Not all memory is stored — some is sung.”
