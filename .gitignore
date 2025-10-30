@@ -46,3 +46,6 @@ data/_tmp_mentimeter.csv
 data/*.json
 venv/
 .venv/
+
+LICENSES_TEMP/
+
