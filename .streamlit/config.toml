@@ -1,3 +1,9 @@
 [theme]
-base = "light"
-primaryColor = "#2B7A78"
+base="light"
+primaryColor="#2F4858"
+font="sans serif"
+
+[server]
+enableCORS = false
+enableXsrfProtection = true
+headless = true
