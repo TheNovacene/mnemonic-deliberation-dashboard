@@ -5,8 +5,5 @@ scikit-learn==1.5.2
 textstat==0.7.4
 webvtt-py==0.5.1
 srt==3.5.3
-altair==5.4.1
 plotly==5.23.0
-typing_extensions==4.12.2
-
-
+altair==5.4.1
