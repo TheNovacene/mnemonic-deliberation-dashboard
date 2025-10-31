@@ -222,8 +222,12 @@ and the spirit of non-commercial knowledge commons.
     )
 
 
-**Cite as:**  
-> Stevens, K. (2025). *Law of Mnemonic Expansion: Mnemonic Deliberation Dashboard (v0.1).* The Novacene.  
+st.markdown("""
+**Cite as:**
+Stevens, K. (2025). *Law of Mnemonic Expansion: Mnemonic Deliberation Dashboard (v0.1).*  
+The Novacene. Zenodo DOI pending.
+""")
+
 
 st.markdown("*Built with Streamlit \u00B7 Hosted in the Cloud \u00B7 Part of the Verse-ality research field.*")
 
