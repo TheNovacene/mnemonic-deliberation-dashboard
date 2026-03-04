@@ -371,6 +371,105 @@
             color: #6c757d;
         }
         
+        .insight-panel {
+            background: white;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            padding: 1.5rem;
+        }
+        
+        .speaker-bar {
+            margin-bottom: 1rem;
+        }
+        
+        .speaker-label {
+            font-size: 0.9rem;
+            color: #434343;
+            margin-bottom: 0.25rem;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .bar-container {
+            background: #e9ecef;
+            height: 24px;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            padding-left: 0.5rem;
+            color: white;
+            font-size: 0.8rem;
+            font-weight: 600;
+            transition: width 0.5s ease;
+        }
+        
+        .concept-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem;
+            margin-bottom: 0.5rem;
+            background: #f8f9fa;
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
+        
+        .concept-name {
+            font-weight: 600;
+            color: #434343;
+        }
+        
+        .concept-count {
+            background: #667eea;
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 12px;
+            font-size: 0.8rem;
+        }
+        
+        .highlight-box {
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-radius: 4px;
+        }
+        
+        .highlight-concepts {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+            flex-wrap: wrap;
+        }
+        
+        .highlight-tag {
+            background: #e3f2fd;
+            color: #1976d2;
+            padding: 0.25rem 0.5rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        
+        .highlight-text {
+            color: #2c3e50;
+            line-height: 1.6;
+            font-size: 0.9rem;
+        }
+        
+        .highlight-speaker {
+            color: #6c757d;
+            font-size: 0.8rem;
+            margin-top: 0.5rem;
+            font-style: italic;
+        }
+        
         #viz-container {
             min-height: 500px;
             border: 2px solid #dee2e6;
@@ -527,6 +626,7 @@
                         <input type="file" id="transcript-file" accept=".txt,.pdf,.docx,.doc,.vtt,.srt">
                         <div id="transcript-file-info" class="file-info hidden"></div>
                     </div>
+                    <button class="analyze-button hidden" id="analyze-file-btn">Analyze Uploaded File</button>
                 </div>
                 
                 <div class="tab-content" id="paste-tab">
@@ -627,8 +727,25 @@ Or just paste any text and it will be analyzed."></textarea>
                 </div>
                 
                 <div class="section">
-                    <h3 class="section-title">Text Preview</h3>
-                    <div class="transcript-preview" id="transcript-preview"></div>
+                    <h3 class="section-title">Text Insights</h3>
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2rem;">
+                        <div class="insight-panel">
+                            <h4 style="color: #434343; margin-bottom: 1rem;">📊 Participation Breakdown</h4>
+                            <div id="speaker-breakdown"></div>
+                        </div>
+                        
+                        <div class="insight-panel">
+                            <h4 style="color: #434343; margin-bottom: 1rem;">🔑 Top Concepts</h4>
+                            <div id="concept-list"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="insight-panel">
+                        <h4 style="color: #434343; margin-bottom: 1rem;">✨ Conceptual Highlights</h4>
+                        <p style="font-size: 0.9rem; color: #6c757d; margin-bottom: 1rem;">Passages where key concepts appear most densely</p>
+                        <div id="highlights-preview"></div>
+                    </div>
                 </div>
                 
                 <div class="export-section">
@@ -708,7 +825,16 @@ Or just paste any text and it will be analyzed."></textarea>
             if (file) {
                 transcriptInfo.textContent = `📄 ${file.name} (${(file.size / 1024).toFixed(1)} KB)`;
                 transcriptInfo.classList.remove('hidden');
-                loadFile(file);
+                document.getElementById('analyze-file-btn').classList.remove('hidden');
+                // Store file for later processing
+                window.pendingFile = file;
+            }
+        });
+        
+        // Analyze file button
+        document.getElementById('analyze-file-btn').addEventListener('click', function() {
+            if (window.pendingFile) {
+                loadFile(window.pendingFile);
             }
         });
         
@@ -1046,23 +1172,129 @@ Or just paste any text and it will be analyzed."></textarea>
             document.getElementById('metric-c').textContent = metrics.c.toFixed(2);
             document.getElementById('metric-i').textContent = metrics.I.toFixed(2);
             
-            const preview = document.getElementById('transcript-preview');
-            preview.innerHTML = '';
+            // Populate speaker breakdown
+            displaySpeakerBreakdown();
             
-            transcriptData.slice(0, 20).forEach(turn => {
-                const row = document.createElement('div');
-                row.className = 'transcript-row';
-                row.innerHTML = `
-                    <div class="speaker">${turn.speaker}</div>
-                    <div class="time">${turn.ts_start || '-'}</div>
-                    <div class="text">${turn.text}</div>
-                `;
-                preview.appendChild(row);
-            });
+            // Populate concept list
+            displayTopConcepts();
+            
+            // Populate highlights
+            displayConceptualHighlights();
             
             createNetworkVisualization();
             
             document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        // Display speaker/section breakdown
+        function displaySpeakerBreakdown() {
+            const container = document.getElementById('speaker-breakdown');
+            container.innerHTML = '';
+            
+            const speakerTokens = {};
+            let totalTokens = 0;
+            
+            transcriptData.forEach(turn => {
+                if (!speakerTokens[turn.speaker]) speakerTokens[turn.speaker] = 0;
+                speakerTokens[turn.speaker] += turn.tokens;
+                totalTokens += turn.tokens;
+            });
+            
+            const speakers = Object.entries(speakerTokens)
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 10); // Top 10 speakers
+            
+            speakers.forEach(([speaker, tokens]) => {
+                const percentage = (tokens / totalTokens * 100).toFixed(1);
+                const barDiv = document.createElement('div');
+                barDiv.className = 'speaker-bar';
+                barDiv.innerHTML = `
+                    <div class="speaker-label">
+                        <span>${speaker}</span>
+                        <span>${tokens.toLocaleString()} words (${percentage}%)</span>
+                    </div>
+                    <div class="bar-container">
+                        <div class="bar-fill" style="width: ${percentage}%"></div>
+                    </div>
+                `;
+                container.appendChild(barDiv);
+            });
+        }
+        
+        // Display top concepts
+        function displayTopConcepts() {
+            const container = document.getElementById('concept-list');
+            container.innerHTML = '';
+            
+            if (!networkData || networkData.nodes.length === 0) {
+                container.innerHTML = '<p style="color: #6c757d; font-size: 0.9rem;">Analyzing concepts...</p>';
+                return;
+            }
+            
+            const topConcepts = networkData.nodes.slice(0, 10);
+            
+            topConcepts.forEach(concept => {
+                const div = document.createElement('div');
+                div.className = 'concept-item';
+                div.innerHTML = `
+                    <span class="concept-name">${concept.id}</span>
+                    <span class="concept-count">${concept.count}×</span>
+                `;
+                container.appendChild(div);
+            });
+        }
+        
+        // Display conceptual highlights
+        function displayConceptualHighlights() {
+            const container = document.getElementById('highlights-preview');
+            container.innerHTML = '';
+            
+            if (!networkData || networkData.nodes.length === 0) return;
+            
+            const topConcepts = new Set(networkData.nodes.slice(0, 10).map(n => n.id));
+            
+            // Find passages with highest concept density
+            const highlights = [];
+            
+            for (let i = 0; i < transcriptData.length; i++) {
+                const turn = transcriptData[i];
+                const concepts = extractConcepts(turn.text);
+                const matchingConcepts = concepts.filter(c => topConcepts.has(c));
+                const uniqueMatches = [...new Set(matchingConcepts)];
+                
+                if (uniqueMatches.length >= 2) { // At least 2 key concepts
+                    highlights.push({
+                        turn,
+                        concepts: uniqueMatches,
+                        density: uniqueMatches.length
+                    });
+                }
+            }
+            
+            // Sort by density and take top 5
+            highlights.sort((a, b) => b.density - a.density);
+            const topHighlights = highlights.slice(0, 5);
+            
+            if (topHighlights.length === 0) {
+                container.innerHTML = '<p style="color: #6c757d; font-size: 0.9rem;">No dense conceptual passages found.</p>';
+                return;
+            }
+            
+            topHighlights.forEach(highlight => {
+                const div = document.createElement('div');
+                div.className = 'highlight-box';
+                
+                const conceptTags = highlight.concepts
+                    .map(c => `<span class="highlight-tag">${c}</span>`)
+                    .join('');
+                
+                div.innerHTML = `
+                    <div class="highlight-concepts">${conceptTags}</div>
+                    <div class="highlight-text">${highlight.turn.text}</div>
+                    <div class="highlight-speaker">— ${highlight.turn.speaker}</div>
+                `;
+                container.appendChild(div);
+            });
         }
         
         // Create timeline
