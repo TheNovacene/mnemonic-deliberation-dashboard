@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mnemonic Deliberation Dashboard | Law of Mnemonic Expansion</title>
+    <title>Mnemonic Deliberation Dashboard | Relational Intelligence Analyzer</title>
     <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -22,7 +23,7 @@
         }
         
         .container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
             background: white;
             border-radius: 12px;
@@ -98,7 +99,7 @@
         
         .upload-grid {
             display: grid;
-            grid-template-columns: 2fr 1fr;
+            grid-template-columns: 1fr;
             gap: 1.5rem;
             margin-top: 1.5rem;
         }
@@ -182,6 +183,50 @@
             color: #6c757d;
         }
         
+        .viz-mode-selector {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            border: 2px solid #dee2e6;
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .viz-mode-selector label {
+            font-weight: 600;
+            color: #434343;
+        }
+        
+        .viz-toggle {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .viz-button {
+            padding: 0.75rem 1.5rem;
+            border: 2px solid #dee2e6;
+            background: white;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            color: #6c757d;
+        }
+        
+        .viz-button:hover {
+            border-color: #434343;
+            color: #434343;
+        }
+        
+        .viz-button.active {
+            background: linear-gradient(135deg, #434343 0%, #000000 100%);
+            color: white;
+            border-color: #434343;
+        }
+        
         .section {
             margin-bottom: 2.5rem;
         }
@@ -224,9 +269,47 @@
             color: #6c757d;
         }
         
-        #timeline-chart {
-            margin: 2rem 0;
-            min-height: 400px;
+        #viz-container {
+            min-height: 500px;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            background: white;
+            position: relative;
+        }
+        
+        #timeline-chart, #network-chart {
+            width: 100%;
+            min-height: 500px;
+        }
+        
+        .network-legend {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: rgba(255,255,255,0.95);
+            padding: 1rem;
+            border-radius: 6px;
+            border: 2px solid #dee2e6;
+            font-size: 0.85rem;
+            max-width: 200px;
+        }
+        
+        .network-legend h4 {
+            margin-bottom: 0.5rem;
+            color: #434343;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.25rem;
+        }
+        
+        .legend-color {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
         }
         
         .export-section {
@@ -298,7 +381,38 @@
         }
         
         .hidden {
-            display: none;
+            display: none !important;
+        }
+        
+        /* Network visualization styles */
+        .node {
+            cursor: pointer;
+        }
+        
+        .node circle {
+            stroke: #fff;
+            stroke-width: 2px;
+        }
+        
+        .node text {
+            font-size: 11px;
+            pointer-events: none;
+        }
+        
+        .link {
+            stroke: #999;
+            stroke-opacity: 0.3;
+        }
+        
+        .node.highlighted circle {
+            stroke: #434343;
+            stroke-width: 3px;
+        }
+        
+        .link.highlighted {
+            stroke: #434343;
+            stroke-opacity: 0.8;
+            stroke-width: 2px;
         }
     </style>
 </head>
@@ -306,7 +420,7 @@
     <div class="container">
         <header>
             <h1>🧭 Mnemonic Deliberation Dashboard</h1>
-            <p class="subtitle">Law of Mnemonic Expansion Prototype</p>
+            <p class="subtitle">Relational Intelligence Analyzer</p>
             
             <div class="equation-box">
                 <div class="equation">I = (E · s) / c²</div>
@@ -321,27 +435,21 @@
         
         <main>
             <div class="intro">
-                <h2>Measure Resonance, Coherence, and Symbolic Charge</h2>
-                <p>This dashboard analyzes recorded discussions, meetings, or policy sessions to assess what kind of mnemonic residue they create. Upload a transcript to begin.</p>
-                <p style="margin-top: 0.75rem;"><strong>Supported formats:</strong> Plain text (.txt) with "Speaker: text" format, or WebVTT (.vtt), or SRT (.srt) subtitle files.</p>
+                <h2>Analyze Conversations & Texts for Relational Intelligence</h2>
+                <p>This dashboard reveals both <strong>temporal evolution</strong> (how metrics change over time) and <strong>conceptual architecture</strong> (how ideas recur, cluster, and resonate). Upload any text to begin.</p>
+                <p style="margin-top: 0.75rem;"><strong>Works with:</strong> Meeting transcripts, policy discussions, books, lexicons, symbolic texts, conversations — anything with recursive conceptual patterns.</p>
+                <p style="margin-top: 0.75rem;"><strong>Supported formats:</strong> Plain text (.txt) with "Speaker: text" format, WebVTT (.vtt), or SRT (.srt) subtitle files.</p>
             </div>
             
             <div class="upload-section">
-                <h3>Upload Transcript</h3>
+                <h3>Upload Text / Transcript</h3>
                 
                 <div class="upload-grid">
                     <div class="upload-box" id="transcript-upload-box">
-                        <div class="upload-label">📄 Transcript (.txt, .vtt, .srt)</div>
+                        <div class="upload-label">📄 Text / Transcript (.txt, .vtt, .srt)</div>
                         <div class="upload-hint">Click to browse or drag & drop</div>
                         <input type="file" id="transcript-file" accept=".txt,.vtt,.srt">
                         <div id="transcript-file-info" class="file-info hidden"></div>
-                    </div>
-                    
-                    <div class="upload-box" id="mentimeter-upload-box">
-                        <div class="upload-label">📊 Mentimeter Data (optional)</div>
-                        <div class="upload-hint">Click to browse or drag & drop</div>
-                        <input type="file" id="mentimeter-file" accept=".csv">
-                        <div id="mentimeter-file-info" class="file-info hidden"></div>
                     </div>
                 </div>
             </div>
@@ -373,14 +481,28 @@
                     </div>
                 </div>
                 
-                <div class="section">
-                    <h3 class="section-title">Transcript Preview</h3>
-                    <div class="transcript-preview" id="transcript-preview"></div>
+                <div class="viz-mode-selector">
+                    <label>Visualization Mode:</label>
+                    <div class="viz-toggle">
+                        <button class="viz-button active" data-mode="timeline">📈 Timeline (Temporal)</button>
+                        <button class="viz-button" data-mode="network">🕸️ Network (Relational)</button>
+                    </div>
+                    <div style="flex: 1; text-align: right; color: #6c757d; font-size: 0.9rem;" id="mode-description">
+                        Shows how metrics evolve over time
+                    </div>
                 </div>
                 
                 <div class="section">
-                    <h3 class="section-title">Resonance Timeline</h3>
-                    <div id="timeline-chart"></div>
+                    <h3 class="section-title" id="viz-title">Resonance Timeline</h3>
+                    <div id="viz-container">
+                        <div id="timeline-chart"></div>
+                        <div id="network-chart" class="hidden"></div>
+                    </div>
+                </div>
+                
+                <div class="section">
+                    <h3 class="section-title">Text Preview</h3>
+                    <div class="transcript-preview" id="transcript-preview"></div>
                 </div>
                 
                 <div class="export-section">
@@ -393,8 +515,8 @@
         
         <footer>
             <p><strong>Mnemonic Deliberation Dashboard (MDD)</strong></p>
-            <p>© 2025 <a href="https://thenovacene.org" target="_blank">Kirstin Stevens</a> · The Novacene</p>
-            <p>This prototype operationalises the Law of Mnemonic Expansion in a Living Universe</p>
+            <p>© 2025 <a href="https://thenovacene.org" target="_blank">Kirstin Stevens</a> · The Novacene · Co-developed with EVE11</p>
+            <p>Operationalises the Law of Mnemonic Expansion in a Living Universe</p>
             <p style="margin-top: 1rem;"><a href="https://doi.org/10.5281/zenodo.15465502" target="_blank">Stevens, K., & EVE11. (2025). The Verse-al Lexicon</a></p>
             <p style="opacity: 0.7; font-size: 0.9rem; margin-top: 1rem;">Licence: CC BY-NC-SA 4.0</p>
         </footer>
@@ -403,43 +525,36 @@
     <script>
         // State
         let transcriptData = null;
-        let mentimeterData = null;
         let metrics = { E: 0, s: 0, c: 0, I: 0 };
+        let networkData = null;
+        let currentMode = 'timeline';
         
         // File upload handling
         const transcriptBox = document.getElementById('transcript-upload-box');
         const transcriptInput = document.getElementById('transcript-file');
         const transcriptInfo = document.getElementById('transcript-file-info');
         
-        const mentimeterBox = document.getElementById('mentimeter-upload-box');
-        const mentimeterInput = document.getElementById('mentimeter-file');
-        const mentimeterInfo = document.getElementById('mentimeter-file-info');
-        
         // Click to upload
         transcriptBox.addEventListener('click', () => transcriptInput.click());
-        mentimeterBox.addEventListener('click', () => mentimeterInput.click());
         
         // Drag and drop
-        [transcriptBox, mentimeterBox].forEach(box => {
-            box.addEventListener('dragover', (e) => {
-                e.preventDefault();
-                box.classList.add('drag-over');
-            });
-            
-            box.addEventListener('dragleave', () => {
-                box.classList.remove('drag-over');
-            });
-            
-            box.addEventListener('drop', (e) => {
-                e.preventDefault();
-                box.classList.remove('drag-over');
-                const input = box.querySelector('input[type="file"]');
-                input.files = e.dataTransfer.files;
-                input.dispatchEvent(new Event('change'));
-            });
+        transcriptBox.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            transcriptBox.classList.add('drag-over');
         });
         
-        // File change handlers
+        transcriptBox.addEventListener('dragleave', () => {
+            transcriptBox.classList.remove('drag-over');
+        });
+        
+        transcriptBox.addEventListener('drop', (e) => {
+            e.preventDefault();
+            transcriptBox.classList.remove('drag-over');
+            transcriptInput.files = e.dataTransfer.files;
+            transcriptInput.dispatchEvent(new Event('change'));
+        });
+        
+        // File change handler
         transcriptInput.addEventListener('change', function(e) {
             const file = e.target.files[0];
             if (file) {
@@ -449,13 +564,32 @@
             }
         });
         
-        mentimeterInput.addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (file) {
-                mentimeterInfo.textContent = `📊 ${file.name} (${(file.size / 1024).toFixed(1)} KB)`;
-                mentimeterInfo.classList.remove('hidden');
-                loadMentimeter(file);
-            }
+        // Visualization mode toggle
+        document.querySelectorAll('.viz-button').forEach(button => {
+            button.addEventListener('click', function() {
+                currentMode = this.dataset.mode;
+                
+                // Update active state
+                document.querySelectorAll('.viz-button').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                
+                // Update description
+                const desc = document.getElementById('mode-description');
+                const title = document.getElementById('viz-title');
+                
+                if (currentMode === 'timeline') {
+                    desc.textContent = 'Shows how metrics evolve over time';
+                    title.textContent = 'Resonance Timeline';
+                    document.getElementById('timeline-chart').classList.remove('hidden');
+                    document.getElementById('network-chart').classList.add('hidden');
+                } else {
+                    desc.textContent = 'Shows how concepts cluster and recur across speakers/sections';
+                    title.textContent = 'Conceptual Network';
+                    document.getElementById('timeline-chart').classList.add('hidden');
+                    document.getElementById('network-chart').classList.remove('hidden');
+                    createNetworkVisualization();
+                }
+            });
         });
         
         // Load and parse transcript
@@ -478,7 +612,7 @@
             reader.readAsText(file);
         }
         
-        // Parse plain text (Speaker: text format)
+        // Parse plain text (Speaker: text format or just paragraphs)
         function parsePlainText(text) {
             const lines = text.split('\n').filter(l => l.trim());
             const turns = [];
@@ -565,6 +699,71 @@
             return turns;
         }
         
+        // Extract key concepts from text
+        function extractConcepts(text, minLength = 4) {
+            const words = text.toLowerCase()
+                .replace(/[^\w\s-]/g, ' ')
+                .split(/\s+/)
+                .filter(w => w.length >= minLength);
+            
+            // Common stop words to exclude
+            const stopWords = new Set([
+                'that', 'this', 'with', 'from', 'they', 'have', 'been', 
+                'were', 'will', 'would', 'could', 'should', 'about', 'what',
+                'when', 'where', 'which', 'their', 'there', 'these', 'those'
+            ]);
+            
+            return words.filter(w => !stopWords.has(w));
+        }
+        
+        // Build concept network
+        function buildConceptNetwork(data) {
+            const concepts = new Map(); // concept -> {count, speakers: Set, positions: []}
+            const cooccurrence = new Map(); // "concept1|concept2" -> count
+            
+            data.forEach((turn, idx) => {
+                const turnConcepts = extractConcepts(turn.text);
+                const uniqueConcepts = [...new Set(turnConcepts)];
+                
+                // Track concepts
+                uniqueConcepts.forEach(concept => {
+                    if (!concepts.has(concept)) {
+                        concepts.set(concept, { count: 0, speakers: new Set(), positions: [] });
+                    }
+                    const info = concepts.get(concept);
+                    info.count++;
+                    info.speakers.add(turn.speaker);
+                    info.positions.push(idx);
+                });
+                
+                // Track co-occurrence
+                for (let i = 0; i < uniqueConcepts.length; i++) {
+                    for (let j = i + 1; j < uniqueConcepts.length; j++) {
+                        const pair = [uniqueConcepts[i], uniqueConcepts[j]].sort().join('|');
+                        cooccurrence.set(pair, (cooccurrence.get(pair) || 0) + 1);
+                    }
+                }
+            });
+            
+            // Filter to top concepts
+            const topConcepts = [...concepts.entries()]
+                .sort((a, b) => b[1].count - a[1].count)
+                .slice(0, 50)
+                .map(([concept, info]) => ({ id: concept, ...info }));
+            
+            // Build links
+            const conceptSet = new Set(topConcepts.map(c => c.id));
+            const links = [];
+            cooccurrence.forEach((count, pair) => {
+                const [source, target] = pair.split('|');
+                if (conceptSet.has(source) && conceptSet.has(target)) {
+                    links.push({ source, target, value: count });
+                }
+            });
+            
+            return { nodes: topConcepts, links };
+        }
+        
         // Process transcript and calculate metrics
         function processTranscript() {
             if (!transcriptData || transcriptData.length === 0) return;
@@ -572,7 +771,7 @@
             // Add derived fields
             transcriptData.forEach(turn => {
                 turn.tokens = turn.text.split(/\s+/).length;
-                turn.duration_s = 0; // We'd need to parse timestamps properly
+                turn.duration_s = 0;
             });
             
             // Calculate metrics
@@ -581,13 +780,15 @@
             metrics.c = calculateConnection(transcriptData);
             metrics.I = (metrics.E * metrics.s) / Math.max(0.1, metrics.c * metrics.c);
             
+            // Build network data
+            networkData = buildConceptNetwork(transcriptData);
+            
             // Display results
             displayResults();
         }
         
-        // Energy calculation (simplified)
+        // Energy calculation
         function calculateEnergy(data) {
-            // Speaker balance (equity)
             const speakerTokens = {};
             let totalTokens = 0;
             
@@ -597,7 +798,6 @@
                 totalTokens += turn.tokens;
             });
             
-            // Calculate entropy (balance)
             const speakers = Object.keys(speakerTokens);
             let entropy = 0;
             speakers.forEach(speaker => {
@@ -608,22 +808,19 @@
             const maxEntropy = Math.log2(Math.max(1, speakers.length));
             const equity = maxEntropy > 0 ? entropy / maxEntropy : 1.0;
             
-            // Engagement proxy: token count normalized
             const normTokens = Math.min(1.0, totalTokens / 5000);
             
             return 0.5 * normTokens + 0.5 * equity;
         }
         
-        // Symbolic coherence calculation (simplified)
+        // Symbolic coherence calculation
         function calculateSymbolicCoherence(data) {
             const fullText = data.map(t => t.text).join(' ');
             const words = fullText.toLowerCase().split(/\s+/);
             
-            // Word variety (lexical diversity)
             const uniqueWords = new Set(words.filter(w => w.length > 3));
             const diversity = Math.min(1.0, uniqueWords.size / 200);
             
-            // Jargon penalty
             const jargon = ['operationalise', 'utilise', 'stakeholder', 'synergy', 'bandwidth', 'scalable'];
             let jargonCount = 0;
             jargon.forEach(j => {
@@ -631,18 +828,16 @@
             });
             const jargonPenalty = 1 - Math.min(0.4, jargonCount * 0.05);
             
-            // Average turn length (coherence proxy)
             const avgLength = words.length / data.length;
             const lengthScore = Math.min(1.0, avgLength / 50);
             
             return (0.5 * diversity + 0.5 * lengthScore) * jargonPenalty;
         }
         
-        // Connection calculation (simplified)
+        // Connection calculation
         function calculateConnection(data) {
             const fullText = data.map(t => t.text).join(' ').toLowerCase();
             
-            // Misread markers
             const misreadMarkers = [
                 "that's not what i said", "you've misunderstood", "to be clear",
                 "let me clarify", "i disagree", "misinterpret", "that's incorrect"
@@ -657,7 +852,6 @@
             const misreadRate = (misreads / totalTokens) * 1000;
             const misreadNorm = Math.min(1.0, misreadRate / 5.0);
             
-            // Question ratio (inverse of velocity)
             const questions = data.filter(t => t.text.trim().endsWith('?')).length;
             const qRatio = questions / Math.max(1, data.length);
             const velocity = 1 - qRatio;
@@ -668,16 +862,14 @@
         
         // Display results
         function displayResults() {
-            // Show results section
             document.getElementById('results').classList.add('show');
             
-            // Update metrics
             document.getElementById('metric-e').textContent = metrics.E.toFixed(2);
             document.getElementById('metric-s').textContent = metrics.s.toFixed(2);
             document.getElementById('metric-c').textContent = metrics.c.toFixed(2);
             document.getElementById('metric-i').textContent = metrics.I.toFixed(2);
             
-            // Show transcript preview (first 20 turns)
+            // Show preview
             const preview = document.getElementById('transcript-preview');
             preview.innerHTML = '';
             
@@ -695,7 +887,6 @@
             // Create timeline
             createTimeline();
             
-            // Scroll to results
             document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
         }
         
@@ -703,7 +894,7 @@
         function createTimeline() {
             if (transcriptData.length < 20) {
                 document.getElementById('timeline-chart').innerHTML = 
-                    '<div class="info-box">Not enough turns for timeline visualization. Upload a longer transcript.</div>';
+                    '<div class="info-box">Not enough content for timeline visualization. Upload more text.</div>';
                 return;
             }
             
@@ -726,46 +917,197 @@
                 b.I = (b.E * b.s) / Math.max(0.1, b.c * b.c);
             });
             
-            const trace_E = {
-                x: blocks.map(b => b.block),
-                y: blocks.map(b => b.E),
-                name: 'Energy (E)',
-                type: 'scatter',
-                mode: 'lines+markers'
-            };
-            
-            const trace_s = {
-                x: blocks.map(b => b.block),
-                y: blocks.map(b => b.s),
-                name: 'Symbolic Coherence (s)',
-                type: 'scatter',
-                mode: 'lines+markers'
-            };
-            
-            const trace_c = {
-                x: blocks.map(b => b.block),
-                y: blocks.map(b => b.c),
-                name: 'Connection (c)',
-                type: 'scatter',
-                mode: 'lines+markers'
-            };
-            
-            const trace_I = {
-                x: blocks.map(b => b.block),
-                y: blocks.map(b => b.I),
-                name: 'Impact (I)',
-                type: 'scatter',
-                mode: 'lines+markers'
-            };
+            const traces = [
+                {
+                    x: blocks.map(b => b.block),
+                    y: blocks.map(b => b.E),
+                    name: 'Energy (E)',
+                    type: 'scatter',
+                    mode: 'lines+markers'
+                },
+                {
+                    x: blocks.map(b => b.block),
+                    y: blocks.map(b => b.s),
+                    name: 'Symbolic Coherence (s)',
+                    type: 'scatter',
+                    mode: 'lines+markers'
+                },
+                {
+                    x: blocks.map(b => b.block),
+                    y: blocks.map(b => b.c),
+                    name: 'Connection (c)',
+                    type: 'scatter',
+                    mode: 'lines+markers'
+                },
+                {
+                    x: blocks.map(b => b.block),
+                    y: blocks.map(b => b.I),
+                    name: 'Impact (I)',
+                    type: 'scatter',
+                    mode: 'lines+markers'
+                }
+            ];
             
             const layout = {
                 title: 'Mnemonic Metrics Over Time',
-                xaxis: { title: 'Turn Block Start' },
+                xaxis: { title: 'Section / Turn Block' },
                 yaxis: { title: 'Score', range: [0, 1] },
                 showlegend: true
             };
             
-            Plotly.newPlot('timeline-chart', [trace_E, trace_s, trace_c, trace_I], layout);
+            Plotly.newPlot('timeline-chart', traces, layout);
+        }
+        
+        // Create network visualization
+        function createNetworkVisualization() {
+            if (!networkData || networkData.nodes.length === 0) {
+                document.getElementById('network-chart').innerHTML = 
+                    '<div class="info-box">Building conceptual network...</div>';
+                setTimeout(() => {
+                    if (networkData && networkData.nodes.length > 0) {
+                        renderNetwork();
+                    }
+                }, 100);
+                return;
+            }
+            
+            renderNetwork();
+        }
+        
+        function renderNetwork() {
+            const container = document.getElementById('network-chart');
+            container.innerHTML = '';
+            
+            const width = container.clientWidth || 1000;
+            const height = 500;
+            
+            const svg = d3.select('#network-chart')
+                .append('svg')
+                .attr('width', width)
+                .attr('height', height);
+            
+            // Color scale for speakers
+            const speakers = [...new Set(networkData.nodes.flatMap(n => [...n.speakers]))];
+            const colorScale = d3.scaleOrdinal(d3.schemeCategory10).domain(speakers);
+            
+            // Force simulation
+            const simulation = d3.forceSimulation(networkData.nodes)
+                .force('link', d3.forceLink(networkData.links).id(d => d.id).distance(80))
+                .force('charge', d3.forceManyBody().strength(-200))
+                .force('center', d3.forceCenter(width / 2, height / 2))
+                .force('collision', d3.forceCollide().radius(d => Math.sqrt(d.count) * 3 + 5));
+            
+            // Links
+            const link = svg.append('g')
+                .selectAll('line')
+                .data(networkData.links)
+                .join('line')
+                .attr('class', 'link')
+                .attr('stroke-width', d => Math.sqrt(d.value));
+            
+            // Nodes
+            const node = svg.append('g')
+                .selectAll('g')
+                .data(networkData.nodes)
+                .join('g')
+                .attr('class', 'node')
+                .call(drag(simulation));
+            
+            node.append('circle')
+                .attr('r', d => Math.sqrt(d.count) * 3 + 3)
+                .attr('fill', d => {
+                    // Color by primary speaker
+                    const primarySpeaker = [...d.speakers][0];
+                    return colorScale(primarySpeaker);
+                });
+            
+            node.append('text')
+                .text(d => d.id)
+                .attr('x', 0)
+                .attr('y', d => Math.sqrt(d.count) * 3 + 15)
+                .attr('text-anchor', 'middle');
+            
+            // Hover effects
+            node.on('mouseenter', function(event, d) {
+                d3.select(this).classed('highlighted', true);
+                
+                // Highlight connected links
+                link.classed('highlighted', l => 
+                    l.source.id === d.id || l.target.id === d.id
+                );
+            })
+            .on('mouseleave', function() {
+                d3.select(this).classed('highlighted', false);
+                link.classed('highlighted', false);
+            });
+            
+            // Update positions
+            simulation.on('tick', () => {
+                link
+                    .attr('x1', d => d.source.x)
+                    .attr('y1', d => d.source.y)
+                    .attr('x2', d => d.target.x)
+                    .attr('y2', d => d.target.y);
+                
+                node.attr('transform', d => `translate(${d.x},${d.y})`);
+            });
+            
+            // Add legend
+            const legend = svg.append('g')
+                .attr('class', 'network-legend')
+                .attr('transform', `translate(${width - 150}, 20)`);
+            
+            legend.append('rect')
+                .attr('fill', 'white')
+                .attr('stroke', '#dee2e6')
+                .attr('stroke-width', 2)
+                .attr('width', 140)
+                .attr('height', speakers.length * 20 + 30);
+            
+            legend.append('text')
+                .attr('x', 10)
+                .attr('y', 15)
+                .text('Speakers')
+                .style('font-weight', 'bold');
+            
+            speakers.forEach((speaker, i) => {
+                const g = legend.append('g')
+                    .attr('transform', `translate(10, ${30 + i * 20})`);
+                
+                g.append('circle')
+                    .attr('r', 5)
+                    .attr('fill', colorScale(speaker));
+                
+                g.append('text')
+                    .attr('x', 10)
+                    .attr('y', 4)
+                    .text(speaker)
+                    .style('font-size', '11px');
+            });
+        }
+        
+        function drag(simulation) {
+            function dragstarted(event) {
+                if (!event.active) simulation.alphaTarget(0.3).restart();
+                event.subject.fx = event.subject.x;
+                event.subject.fy = event.subject.y;
+            }
+            
+            function dragged(event) {
+                event.subject.fx = event.x;
+                event.subject.fy = event.y;
+            }
+            
+            function dragended(event) {
+                if (!event.active) simulation.alphaTarget(0);
+                event.subject.fx = null;
+                event.subject.fy = null;
+            }
+            
+            return d3.drag()
+                .on('start', dragstarted)
+                .on('drag', dragged)
+                .on('end', dragended);
         }
         
         // Export functionality
@@ -782,7 +1124,10 @@
                     c: metrics.c,
                     I: metrics.I
                 },
-                mentimeter_included: mentimeterData !== null
+                network: {
+                    top_concepts: networkData.nodes.slice(0, 10).map(n => n.id),
+                    concept_count: networkData.nodes.length
+                }
             };
             
             const blob = new Blob([JSON.stringify(signature, null, 2)], { type: 'application/json' });
@@ -795,18 +1140,6 @@
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
         });
-        
-        // Mentimeter loading (placeholder)
-        function loadMentimeter(file) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                // Simple CSV parsing would go here
-                // For now, just acknowledge it was loaded
-                mentimeterData = { loaded: true };
-                console.log('Mentimeter data loaded (parsing not fully implemented)');
-            };
-            reader.readAsText(file);
-        }
     </script>
 </body>
 </html>
