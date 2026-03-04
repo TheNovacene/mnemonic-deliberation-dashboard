@@ -6,6 +6,8 @@
     <title>Mnemonic Deliberation Dashboard | Relational Intelligence Analyzer</title>
     <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
     <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script src="https://unpkg.com/mammoth@1.6.0/mammoth.browser.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -97,11 +99,39 @@
             border: 2px solid #dee2e6;
         }
         
-        .upload-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 1.5rem;
-            margin-top: 1.5rem;
+        .upload-tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid #dee2e6;
+        }
+        
+        .tab-button {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            font-weight: 600;
+            color: #6c757d;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+        }
+        
+        .tab-button:hover {
+            color: #434343;
+        }
+        
+        .tab-button.active {
+            color: #434343;
+            border-bottom-color: #434343;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
         }
         
         .upload-box {
@@ -139,6 +169,40 @@
             color: #6c757d;
         }
         
+        .paste-area {
+            width: 100%;
+            min-height: 300px;
+            padding: 1rem;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 0.95rem;
+            resize: vertical;
+        }
+        
+        .paste-area:focus {
+            outline: none;
+            border-color: #434343;
+        }
+        
+        .analyze-button {
+            margin-top: 1rem;
+            background: linear-gradient(135deg, #434343 0%, #000000 100%);
+            color: white;
+            border: none;
+            padding: 0.75rem 2rem;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.3s ease;
+        }
+        
+        .analyze-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+        }
+        
         .file-info {
             margin-top: 1rem;
             padding: 0.75rem;
@@ -150,7 +214,7 @@
         
         .metrics-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 1.5rem;
             margin: 2rem 0;
         }
@@ -159,16 +223,33 @@
             background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
             padding: 1.5rem;
             border-radius: 8px;
-            text-align: center;
             border: 2px solid #dee2e6;
+            position: relative;
+        }
+        
+        .metric-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
         }
         
         .metric-label {
             font-size: 0.9rem;
             color: #6c757d;
-            margin-bottom: 0.5rem;
             text-transform: uppercase;
             letter-spacing: 1px;
+        }
+        
+        .info-toggle {
+            cursor: pointer;
+            color: #6c757d;
+            font-size: 1.2rem;
+            transition: color 0.3s ease;
+        }
+        
+        .info-toggle:hover {
+            color: #434343;
         }
         
         .metric-value {
@@ -181,6 +262,27 @@
         .metric-description {
             font-size: 0.85rem;
             color: #6c757d;
+            margin-bottom: 0.75rem;
+        }
+        
+        .metric-explanation {
+            display: none;
+            margin-top: 1rem;
+            padding: 1rem;
+            background: white;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            line-height: 1.6;
+            border-left: 3px solid #434343;
+        }
+        
+        .metric-explanation.show {
+            display: block;
+        }
+        
+        .metric-explanation h5 {
+            color: #434343;
+            margin-bottom: 0.5rem;
         }
         
         .viz-mode-selector {
@@ -282,36 +384,6 @@
             min-height: 500px;
         }
         
-        .network-legend {
-            position: absolute;
-            top: 1rem;
-            right: 1rem;
-            background: rgba(255,255,255,0.95);
-            padding: 1rem;
-            border-radius: 6px;
-            border: 2px solid #dee2e6;
-            font-size: 0.85rem;
-            max-width: 200px;
-        }
-        
-        .network-legend h4 {
-            margin-bottom: 0.5rem;
-            color: #434343;
-        }
-        
-        .legend-item {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            margin-bottom: 0.25rem;
-        }
-        
-        .legend-color {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-        }
-        
         .export-section {
             background: #e3f2fd;
             padding: 2rem;
@@ -384,7 +456,6 @@
             display: none !important;
         }
         
-        /* Network visualization styles */
         .node {
             cursor: pointer;
         }
@@ -436,21 +507,37 @@
         <main>
             <div class="intro">
                 <h2>Analyze Conversations & Texts for Relational Intelligence</h2>
-                <p>This dashboard reveals both <strong>temporal evolution</strong> (how metrics change over time) and <strong>conceptual architecture</strong> (how ideas recur, cluster, and resonate). Upload any text to begin.</p>
+                <p>This dashboard reveals both <strong>conceptual architecture</strong> (how ideas recur, cluster, and resonate) and <strong>temporal evolution</strong> (how metrics change over time). Upload or paste any text to begin.</p>
                 <p style="margin-top: 0.75rem;"><strong>Works with:</strong> Meeting transcripts, policy discussions, books, lexicons, symbolic texts, conversations — anything with recursive conceptual patterns.</p>
-                <p style="margin-top: 0.75rem;"><strong>Supported formats:</strong> Plain text (.txt) with "Speaker: text" format, WebVTT (.vtt), or SRT (.srt) subtitle files.</p>
+                <p style="margin-top: 0.75rem;"><strong>Supported formats:</strong> Plain text (.txt), PDF (.pdf), Word (.docx), WebVTT (.vtt), SRT (.srt), or paste directly.</p>
             </div>
             
             <div class="upload-section">
-                <h3>Upload Text / Transcript</h3>
+                <h3>Add Your Text</h3>
                 
-                <div class="upload-grid">
+                <div class="upload-tabs">
+                    <button class="tab-button active" data-tab="upload">📤 Upload File</button>
+                    <button class="tab-button" data-tab="paste">📝 Paste Text</button>
+                </div>
+                
+                <div class="tab-content active" id="upload-tab">
                     <div class="upload-box" id="transcript-upload-box">
-                        <div class="upload-label">📄 Text / Transcript (.txt, .vtt, .srt)</div>
-                        <div class="upload-hint">Click to browse or drag & drop</div>
-                        <input type="file" id="transcript-file" accept=".txt,.vtt,.srt">
+                        <div class="upload-label">📄 Upload Text / Transcript</div>
+                        <div class="upload-hint">Supports .txt, .pdf, .docx, .vtt, .srt | Click to browse or drag & drop</div>
+                        <input type="file" id="transcript-file" accept=".txt,.pdf,.docx,.doc,.vtt,.srt">
                         <div id="transcript-file-info" class="file-info hidden"></div>
                     </div>
+                </div>
+                
+                <div class="tab-content" id="paste-tab">
+                    <textarea class="paste-area" id="paste-area" placeholder="Paste your text here...
+
+For conversations, use this format:
+Speaker Name: What they said
+Another Speaker: Their response
+
+Or just paste any text and it will be analyzed."></textarea>
+                    <button class="analyze-button" id="analyze-paste-btn">Analyze Pasted Text</button>
                 </div>
             </div>
             
@@ -459,24 +546,63 @@
                     <h3 class="section-title">Mnemonic Metrics</h3>
                     <div class="metrics-grid">
                         <div class="metric-card">
-                            <div class="metric-label">Energy (E)</div>
+                            <div class="metric-header">
+                                <div class="metric-label">Energy (E)</div>
+                                <div class="info-toggle" data-metric="e">ℹ️</div>
+                            </div>
                             <div class="metric-value" id="metric-e">-</div>
                             <div class="metric-description">Attention & Presence</div>
+                            <div class="metric-explanation" id="explanation-e">
+                                <h5>How It's Calculated:</h5>
+                                <p>Energy combines <strong>engagement volume</strong> (how much content) and <strong>participation equity</strong> (how balanced voices are). We measure speaker/section balance using entropy — perfectly balanced participation scores high, dominated conversations score low.</p>
+                                <h5 style="margin-top: 0.75rem;">Why It Matters:</h5>
+                                <p>High energy means people are invested and present. Low energy signals disengagement, performative participation, or unbalanced power. In meetings, it shows whose voices dominate. In texts, it reveals conceptual density.</p>
+                            </div>
                         </div>
+                        
                         <div class="metric-card">
-                            <div class="metric-label">Symbolic Coherence (s)</div>
+                            <div class="metric-header">
+                                <div class="metric-label">Symbolic Coherence (s)</div>
+                                <div class="info-toggle" data-metric="s">ℹ️</div>
+                            </div>
                             <div class="metric-value" id="metric-s">-</div>
                             <div class="metric-description">Meaning Density</div>
+                            <div class="metric-explanation" id="explanation-s">
+                                <h5>How It's Calculated:</h5>
+                                <p>Symbolic coherence measures <strong>lexical diversity</strong> (vocabulary richness), <strong>conceptual depth</strong> (meaningful vs superficial language), and applies a <strong>jargon penalty</strong> for buzzwords that obscure meaning.</p>
+                                <h5 style="margin-top: 0.75rem;">Why It Matters:</h5>
+                                <p>High coherence means the text carries clear, dense meaning. Low coherence suggests fragmentation, unclear purpose, or reliance on empty jargon. This reveals whether ideas hold together or drift apart.</p>
+                            </div>
                         </div>
+                        
                         <div class="metric-card">
-                            <div class="metric-label">Connection² (c²)</div>
+                            <div class="metric-header">
+                                <div class="metric-label">Connection² (c²)</div>
+                                <div class="info-toggle" data-metric="c">ℹ️</div>
+                            </div>
                             <div class="metric-value" id="metric-c">-</div>
                             <div class="metric-description">Speed × Trust</div>
+                            <div class="metric-explanation" id="explanation-c">
+                                <h5>How It's Calculated:</h5>
+                                <p>Connection measures <strong>relational clarity</strong> (absence of misreads, clarifications, disagreements) and <strong>conversational velocity</strong> (how fast ideas flow without getting stuck in questions). High questions = slower connection.</p>
+                                <h5 style="margin-top: 0.75rem;">Why It Matters:</h5>
+                                <p>High connection means trust, clear communication, and appropriate pace. Low connection signals either speed too high OR trust too low. This is <em>squared</em> in the equation because velocity effects are non-linear — small speed changes create big impacts.</p>
+                            </div>
                         </div>
+                        
                         <div class="metric-card">
-                            <div class="metric-label">Impact (I)</div>
+                            <div class="metric-header">
+                                <div class="metric-label">Impact (I)</div>
+                                <div class="info-toggle" data-metric="i">ℹ️</div>
+                            </div>
                             <div class="metric-value" id="metric-i">-</div>
                             <div class="metric-description">Mnemonic Residue</div>
+                            <div class="metric-explanation" id="explanation-i">
+                                <h5>How It's Calculated:</h5>
+                                <p><strong>I = (E · s) / c²</strong><br>Impact combines all three dimensions. High energy and coherence can only create lasting impact if connection is strong. Low connection (in denominator) means even good content creates weak mnemonic residue.</p>
+                                <h5 style="margin-top: 0.75rem;">Why It Matters:</h5>
+                                <p>This measures <strong>what endures in memory</strong>. High impact means this conversation/text will be remembered and will shape future thinking. Low impact means it fades or leaves negative traces. This is what the system <em>leaves behind</em>.</p>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -484,19 +610,19 @@
                 <div class="viz-mode-selector">
                     <label>Visualization Mode:</label>
                     <div class="viz-toggle">
-                        <button class="viz-button active" data-mode="timeline">📈 Timeline (Temporal)</button>
-                        <button class="viz-button" data-mode="network">🕸️ Network (Relational)</button>
+                        <button class="viz-button active" data-mode="network">🕸️ Network (Relational)</button>
+                        <button class="viz-button" data-mode="timeline">📈 Timeline (Temporal)</button>
                     </div>
                     <div style="flex: 1; text-align: right; color: #6c757d; font-size: 0.9rem;" id="mode-description">
-                        Shows how metrics evolve over time
+                        Shows how concepts cluster and recur across speakers/sections
                     </div>
                 </div>
                 
                 <div class="section">
-                    <h3 class="section-title" id="viz-title">Resonance Timeline</h3>
+                    <h3 class="section-title" id="viz-title">Conceptual Network</h3>
                     <div id="viz-container">
-                        <div id="timeline-chart"></div>
-                        <div id="network-chart" class="hidden"></div>
+                        <div id="network-chart"></div>
+                        <div id="timeline-chart" class="hidden"></div>
                     </div>
                 </div>
                 
@@ -507,7 +633,7 @@
                 
                 <div class="export-section">
                     <h3 style="margin-bottom: 1rem;">Export Mnemonic Signature</h3>
-                    <p style="margin-bottom: 1rem;">Download a JSON file containing all metrics and metadata for this session.</p>
+                    <p style="margin-bottom: 1rem;">Download a JSON file containing all metrics, top concepts, and metadata.</p>
                     <button class="button" id="export-btn">📥 Download Signature JSON</button>
                 </div>
             </div>
@@ -523,21 +649,44 @@
     </div>
     
     <script>
+        // Configure PDF.js worker
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+        
         // State
         let transcriptData = null;
         let metrics = { E: 0, s: 0, c: 0, I: 0 };
         let networkData = null;
-        let currentMode = 'timeline';
+        let currentMode = 'network'; // Start with network mode
+        
+        // Tab switching
+        document.querySelectorAll('.tab-button').forEach(button => {
+            button.addEventListener('click', function() {
+                const tab = this.dataset.tab;
+                
+                document.querySelectorAll('.tab-button').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                
+                this.classList.add('active');
+                document.getElementById(tab + '-tab').classList.add('active');
+            });
+        });
+        
+        // Metric info toggles
+        document.querySelectorAll('.info-toggle').forEach(toggle => {
+            toggle.addEventListener('click', function() {
+                const metric = this.dataset.metric;
+                const explanation = document.getElementById('explanation-' + metric);
+                explanation.classList.toggle('show');
+            });
+        });
         
         // File upload handling
         const transcriptBox = document.getElementById('transcript-upload-box');
         const transcriptInput = document.getElementById('transcript-file');
         const transcriptInfo = document.getElementById('transcript-file-info');
         
-        // Click to upload
         transcriptBox.addEventListener('click', () => transcriptInput.click());
         
-        // Drag and drop
         transcriptBox.addEventListener('dragover', (e) => {
             e.preventDefault();
             transcriptBox.classList.add('drag-over');
@@ -554,13 +703,23 @@
             transcriptInput.dispatchEvent(new Event('change'));
         });
         
-        // File change handler
         transcriptInput.addEventListener('change', function(e) {
             const file = e.target.files[0];
             if (file) {
                 transcriptInfo.textContent = `📄 ${file.name} (${(file.size / 1024).toFixed(1)} KB)`;
                 transcriptInfo.classList.remove('hidden');
-                loadTranscript(file);
+                loadFile(file);
+            }
+        });
+        
+        // Paste text handling
+        document.getElementById('analyze-paste-btn').addEventListener('click', function() {
+            const text = document.getElementById('paste-area').value.trim();
+            if (text) {
+                transcriptData = parsePlainText(text);
+                processTranscript();
+            } else {
+                alert('Please paste some text first.');
             }
         });
         
@@ -569,11 +728,9 @@
             button.addEventListener('click', function() {
                 currentMode = this.dataset.mode;
                 
-                // Update active state
                 document.querySelectorAll('.viz-button').forEach(b => b.classList.remove('active'));
                 this.classList.add('active');
                 
-                // Update description
                 const desc = document.getElementById('mode-description');
                 const title = document.getElementById('viz-title');
                 
@@ -582,6 +739,7 @@
                     title.textContent = 'Resonance Timeline';
                     document.getElementById('timeline-chart').classList.remove('hidden');
                     document.getElementById('network-chart').classList.add('hidden');
+                    createTimeline();
                 } else {
                     desc.textContent = 'Shows how concepts cluster and recur across speakers/sections';
                     title.textContent = 'Conceptual Network';
@@ -592,27 +750,55 @@
             });
         });
         
-        // Load and parse transcript
-        function loadTranscript(file) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const text = e.target.result;
-                const ext = file.name.split('.').pop().toLowerCase();
-                
-                if (ext === 'vtt') {
-                    transcriptData = parseVTT(text);
-                } else if (ext === 'srt') {
-                    transcriptData = parseSRT(text);
-                } else {
-                    transcriptData = parsePlainText(text);
-                }
-                
+        // Load file based on type
+        async function loadFile(file) {
+            const ext = file.name.split('.').pop().toLowerCase();
+            
+            if (ext === 'pdf') {
+                await loadPDF(file);
+            } else if (ext === 'docx' || ext === 'doc') {
+                await loadWord(file);
+            } else if (ext === 'vtt') {
+                const text = await file.text();
+                transcriptData = parseVTT(text);
                 processTranscript();
-            };
-            reader.readAsText(file);
+            } else if (ext === 'srt') {
+                const text = await file.text();
+                transcriptData = parseSRT(text);
+                processTranscript();
+            } else {
+                const text = await file.text();
+                transcriptData = parsePlainText(text);
+                processTranscript();
+            }
         }
         
-        // Parse plain text (Speaker: text format or just paragraphs)
+        // Load PDF
+        async function loadPDF(file) {
+            const arrayBuffer = await file.arrayBuffer();
+            const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+            
+            let fullText = '';
+            for (let i = 1; i <= pdf.numPages; i++) {
+                const page = await pdf.getPage(i);
+                const textContent = await page.getTextContent();
+                const pageText = textContent.items.map(item => item.str).join(' ');
+                fullText += pageText + '\n';
+            }
+            
+            transcriptData = parsePlainText(fullText);
+            processTranscript();
+        }
+        
+        // Load Word document
+        async function loadWord(file) {
+            const arrayBuffer = await file.arrayBuffer();
+            const result = await mammoth.extractRawText({ arrayBuffer });
+            transcriptData = parsePlainText(result.value);
+            processTranscript();
+        }
+        
+        // Parse plain text
         function parsePlainText(text) {
             const lines = text.split('\n').filter(l => l.trim());
             const turns = [];
@@ -639,7 +825,7 @@
             return turns;
         }
         
-        // Basic VTT parser
+        // VTT parser
         function parseVTT(text) {
             const turns = [];
             const blocks = text.split('\n\n');
@@ -669,7 +855,7 @@
             return turns;
         }
         
-        // Basic SRT parser
+        // SRT parser
         function parseSRT(text) {
             const turns = [];
             const blocks = text.split('\n\n');
@@ -699,14 +885,13 @@
             return turns;
         }
         
-        // Extract key concepts from text
+        // Extract concepts
         function extractConcepts(text, minLength = 4) {
             const words = text.toLowerCase()
                 .replace(/[^\w\s-]/g, ' ')
                 .split(/\s+/)
                 .filter(w => w.length >= minLength);
             
-            // Common stop words to exclude
             const stopWords = new Set([
                 'that', 'this', 'with', 'from', 'they', 'have', 'been', 
                 'were', 'will', 'would', 'could', 'should', 'about', 'what',
@@ -716,16 +901,15 @@
             return words.filter(w => !stopWords.has(w));
         }
         
-        // Build concept network
+        // Build network
         function buildConceptNetwork(data) {
-            const concepts = new Map(); // concept -> {count, speakers: Set, positions: []}
-            const cooccurrence = new Map(); // "concept1|concept2" -> count
+            const concepts = new Map();
+            const cooccurrence = new Map();
             
             data.forEach((turn, idx) => {
                 const turnConcepts = extractConcepts(turn.text);
                 const uniqueConcepts = [...new Set(turnConcepts)];
                 
-                // Track concepts
                 uniqueConcepts.forEach(concept => {
                     if (!concepts.has(concept)) {
                         concepts.set(concept, { count: 0, speakers: new Set(), positions: [] });
@@ -736,7 +920,6 @@
                     info.positions.push(idx);
                 });
                 
-                // Track co-occurrence
                 for (let i = 0; i < uniqueConcepts.length; i++) {
                     for (let j = i + 1; j < uniqueConcepts.length; j++) {
                         const pair = [uniqueConcepts[i], uniqueConcepts[j]].sort().join('|');
@@ -745,13 +928,11 @@
                 }
             });
             
-            // Filter to top concepts
             const topConcepts = [...concepts.entries()]
                 .sort((a, b) => b[1].count - a[1].count)
                 .slice(0, 50)
                 .map(([concept, info]) => ({ id: concept, ...info }));
             
-            // Build links
             const conceptSet = new Set(topConcepts.map(c => c.id));
             const links = [];
             cooccurrence.forEach((count, pair) => {
@@ -764,30 +945,26 @@
             return { nodes: topConcepts, links };
         }
         
-        // Process transcript and calculate metrics
+        // Process transcript
         function processTranscript() {
             if (!transcriptData || transcriptData.length === 0) return;
             
-            // Add derived fields
             transcriptData.forEach(turn => {
                 turn.tokens = turn.text.split(/\s+/).length;
                 turn.duration_s = 0;
             });
             
-            // Calculate metrics
             metrics.E = calculateEnergy(transcriptData);
             metrics.s = calculateSymbolicCoherence(transcriptData);
             metrics.c = calculateConnection(transcriptData);
             metrics.I = (metrics.E * metrics.s) / Math.max(0.1, metrics.c * metrics.c);
             
-            // Build network data
             networkData = buildConceptNetwork(transcriptData);
             
-            // Display results
             displayResults();
         }
         
-        // Energy calculation
+        // Calculate Energy
         function calculateEnergy(data) {
             const speakerTokens = {};
             let totalTokens = 0;
@@ -813,7 +990,7 @@
             return 0.5 * normTokens + 0.5 * equity;
         }
         
-        // Symbolic coherence calculation
+        // Calculate Symbolic Coherence
         function calculateSymbolicCoherence(data) {
             const fullText = data.map(t => t.text).join(' ');
             const words = fullText.toLowerCase().split(/\s+/);
@@ -834,7 +1011,7 @@
             return (0.5 * diversity + 0.5 * lengthScore) * jargonPenalty;
         }
         
-        // Connection calculation
+        // Calculate Connection
         function calculateConnection(data) {
             const fullText = data.map(t => t.text).join(' ').toLowerCase();
             
@@ -869,7 +1046,6 @@
             document.getElementById('metric-c').textContent = metrics.c.toFixed(2);
             document.getElementById('metric-i').textContent = metrics.I.toFixed(2);
             
-            // Show preview
             const preview = document.getElementById('transcript-preview');
             preview.innerHTML = '';
             
@@ -884,17 +1060,16 @@
                 preview.appendChild(row);
             });
             
-            // Create timeline
-            createTimeline();
+            createNetworkVisualization();
             
             document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
         }
         
-        // Create timeline visualization
+        // Create timeline
         function createTimeline() {
             if (transcriptData.length < 20) {
                 document.getElementById('timeline-chart').innerHTML = 
-                    '<div class="info-box">Not enough content for timeline visualization. Upload more text.</div>';
+                    '<div class="info-box">Not enough content for timeline visualization.</div>';
                 return;
             }
             
@@ -958,16 +1133,12 @@
             Plotly.newPlot('timeline-chart', traces, layout);
         }
         
-        // Create network visualization
+        // Create network
         function createNetworkVisualization() {
             if (!networkData || networkData.nodes.length === 0) {
                 document.getElementById('network-chart').innerHTML = 
                     '<div class="info-box">Building conceptual network...</div>';
-                setTimeout(() => {
-                    if (networkData && networkData.nodes.length > 0) {
-                        renderNetwork();
-                    }
-                }, 100);
+                setTimeout(renderNetwork, 100);
                 return;
             }
             
@@ -986,18 +1157,15 @@
                 .attr('width', width)
                 .attr('height', height);
             
-            // Color scale for speakers
             const speakers = [...new Set(networkData.nodes.flatMap(n => [...n.speakers]))];
             const colorScale = d3.scaleOrdinal(d3.schemeCategory10).domain(speakers);
             
-            // Force simulation
             const simulation = d3.forceSimulation(networkData.nodes)
                 .force('link', d3.forceLink(networkData.links).id(d => d.id).distance(80))
                 .force('charge', d3.forceManyBody().strength(-200))
                 .force('center', d3.forceCenter(width / 2, height / 2))
                 .force('collision', d3.forceCollide().radius(d => Math.sqrt(d.count) * 3 + 5));
             
-            // Links
             const link = svg.append('g')
                 .selectAll('line')
                 .data(networkData.links)
@@ -1005,7 +1173,6 @@
                 .attr('class', 'link')
                 .attr('stroke-width', d => Math.sqrt(d.value));
             
-            // Nodes
             const node = svg.append('g')
                 .selectAll('g')
                 .data(networkData.nodes)
@@ -1016,7 +1183,6 @@
             node.append('circle')
                 .attr('r', d => Math.sqrt(d.count) * 3 + 3)
                 .attr('fill', d => {
-                    // Color by primary speaker
                     const primarySpeaker = [...d.speakers][0];
                     return colorScale(primarySpeaker);
                 });
@@ -1027,11 +1193,8 @@
                 .attr('y', d => Math.sqrt(d.count) * 3 + 15)
                 .attr('text-anchor', 'middle');
             
-            // Hover effects
             node.on('mouseenter', function(event, d) {
                 d3.select(this).classed('highlighted', true);
-                
-                // Highlight connected links
                 link.classed('highlighted', l => 
                     l.source.id === d.id || l.target.id === d.id
                 );
@@ -1041,7 +1204,6 @@
                 link.classed('highlighted', false);
             });
             
-            // Update positions
             simulation.on('tick', () => {
                 link
                     .attr('x1', d => d.source.x)
@@ -1052,9 +1214,7 @@
                 node.attr('transform', d => `translate(${d.x},${d.y})`);
             });
             
-            // Add legend
             const legend = svg.append('g')
-                .attr('class', 'network-legend')
                 .attr('transform', `translate(${width - 150}, 20)`);
             
             legend.append('rect')
@@ -1062,13 +1222,15 @@
                 .attr('stroke', '#dee2e6')
                 .attr('stroke-width', 2)
                 .attr('width', 140)
-                .attr('height', speakers.length * 20 + 30);
+                .attr('height', speakers.length * 20 + 30)
+                .attr('rx', 6);
             
             legend.append('text')
                 .attr('x', 10)
                 .attr('y', 15)
                 .text('Speakers')
-                .style('font-weight', 'bold');
+                .style('font-weight', 'bold')
+                .style('font-size', '12px');
             
             speakers.forEach((speaker, i) => {
                 const g = legend.append('g')
@@ -1110,7 +1272,7 @@
                 .on('end', dragended);
         }
         
-        // Export functionality
+        // Export
         document.getElementById('export-btn').addEventListener('click', function() {
             const signature = {
                 session_meta: {
