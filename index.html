@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mnemonic Deliberation Dashboard | Law of Mnemonic Expansion</title>
+    <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #2c3e50;
+            background: linear-gradient(135deg, #434343 0%, #000000 100%);
+            min-height: 100vh;
+            padding: 2rem 1rem;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        
+        header {
+            background: linear-gradient(135deg, #434343 0%, #000000 100%);
+            color: white;
+            padding: 3rem 2rem;
+            text-align: center;
+        }
+        
+        h1 {
+            font-size: 2.2rem;
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+        }
+        
+        .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            margin-bottom: 1.5rem;
+        }
+        
+        .equation-box {
+            background: rgba(255,255,255,0.1);
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin: 1.5rem auto;
+            max-width: 600px;
+            border: 2px solid rgba(255,255,255,0.2);
+        }
+        
+        .equation {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+            letter-spacing: 2px;
+        }
+        
+        .equation-key {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            line-height: 1.8;
+        }
+        
+        main {
+            padding: 2.5rem 2rem;
+        }
+        
+        .intro {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 30%);
+            padding: 2rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            border-left: 4px solid #434343;
+        }
+        
+        .intro h2 {
+            color: #434343;
+            margin-bottom: 1rem;
+        }
+        
+        .upload-section {
+            background: #f8f9fa;
+            padding: 2rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            border: 2px solid #dee2e6;
+        }
+        
+        .upload-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+        
+        .upload-box {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            border: 2px dashed #dee2e6;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .upload-box:hover {
+            border-color: #434343;
+            background: #f8f9fa;
+        }
+        
+        .upload-box.drag-over {
+            border-color: #434343;
+            background: #e9ecef;
+        }
+        
+        .upload-box input[type="file"] {
+            display: none;
+        }
+        
+        .upload-label {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #434343;
+        }
+        
+        .upload-hint {
+            font-size: 0.9rem;
+            color: #6c757d;
+        }
+        
+        .file-info {
+            margin-top: 1rem;
+            padding: 0.75rem;
+            background: #d1ecf1;
+            border-radius: 6px;
+            color: #0c5460;
+            font-size: 0.9rem;
+        }
+        
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+        
+        .metric-card {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 1.5rem;
+            border-radius: 8px;
+            text-align: center;
+            border: 2px solid #dee2e6;
+        }
+        
+        .metric-label {
+            font-size: 0.9rem;
+            color: #6c757d;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .metric-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #434343;
+            margin-bottom: 0.25rem;
+        }
+        
+        .metric-description {
+            font-size: 0.85rem;
+            color: #6c757d;
+        }
+        
+        .section {
+            margin-bottom: 2.5rem;
+        }
+        
+        .section-title {
+            font-size: 1.5rem;
+            color: #434343;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 2px solid #dee2e6;
+        }
+        
+        .transcript-preview {
+            background: white;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .transcript-row {
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid #e9ecef;
+            display: grid;
+            grid-template-columns: 100px 100px 1fr;
+            gap: 1rem;
+            font-size: 0.9rem;
+        }
+        
+        .transcript-row:nth-child(even) {
+            background: #f8f9fa;
+        }
+        
+        .transcript-row .speaker {
+            font-weight: 600;
+            color: #434343;
+        }
+        
+        .transcript-row .time {
+            color: #6c757d;
+        }
+        
+        #timeline-chart {
+            margin: 2rem 0;
+            min-height: 400px;
+        }
+        
+        .export-section {
+            background: #e3f2fd;
+            padding: 2rem;
+            border-radius: 8px;
+            margin-top: 2rem;
+        }
+        
+        .button {
+            background: linear-gradient(135deg, #434343 0%, #000000 100%);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.3s ease;
+        }
+        
+        .button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+        }
+        
+        .button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .results {
+            display: none;
+        }
+        
+        .results.show {
+            display: block;
+        }
+        
+        .info-box {
+            background: #d1ecf1;
+            border-left: 4px solid #17a2b8;
+            padding: 1rem;
+            border-radius: 6px;
+            margin: 1rem 0;
+            color: #0c5460;
+        }
+        
+        footer {
+            background: #2c3e50;
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+        
+        footer p {
+            margin-bottom: 0.5rem;
+            opacity: 0.9;
+        }
+        
+        footer a {
+            color: #667eea;
+            text-decoration: none;
+        }
+        
+        footer a:hover {
+            text-decoration: underline;
+        }
+        
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🧭 Mnemonic Deliberation Dashboard</h1>
+            <p class="subtitle">Law of Mnemonic Expansion Prototype</p>
+            
+            <div class="equation-box">
+                <div class="equation">I = (E · s) / c²</div>
+                <div class="equation-key">
+                    <strong>E</strong> = Energy (attention, presence, emotional investment)<br>
+                    <strong>s</strong> = Symbolic Coherence (narrative and meaning density)<br>
+                    <strong>c²</strong> = Connection² (communication speed × trust coherence)<br>
+                    <strong>I</strong> = Impact / Identity (mnemonic residue — what endures)
+                </div>
+            </div>
+        </header>
+        
+        <main>
+            <div class="intro">
+                <h2>Measure Resonance, Coherence, and Symbolic Charge</h2>
+                <p>This dashboard analyzes recorded discussions, meetings, or policy sessions to assess what kind of mnemonic residue they create. Upload a transcript to begin.</p>
+                <p style="margin-top: 0.75rem;"><strong>Supported formats:</strong> Plain text (.txt) with "Speaker: text" format, or WebVTT (.vtt), or SRT (.srt) subtitle files.</p>
+            </div>
+            
+            <div class="upload-section">
+                <h3>Upload Transcript</h3>
+                
+                <div class="upload-grid">
+                    <div class="upload-box" id="transcript-upload-box">
+                        <div class="upload-label">📄 Transcript (.txt, .vtt, .srt)</div>
+                        <div class="upload-hint">Click to browse or drag & drop</div>
+                        <input type="file" id="transcript-file" accept=".txt,.vtt,.srt">
+                        <div id="transcript-file-info" class="file-info hidden"></div>
+                    </div>
+                    
+                    <div class="upload-box" id="mentimeter-upload-box">
+                        <div class="upload-label">📊 Mentimeter Data (optional)</div>
+                        <div class="upload-hint">Click to browse or drag & drop</div>
+                        <input type="file" id="mentimeter-file" accept=".csv">
+                        <div id="mentimeter-file-info" class="file-info hidden"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="results" class="results">
+                <div class="section">
+                    <h3 class="section-title">Mnemonic Metrics</h3>
+                    <div class="metrics-grid">
+                        <div class="metric-card">
+                            <div class="metric-label">Energy (E)</div>
+                            <div class="metric-value" id="metric-e">-</div>
+                            <div class="metric-description">Attention & Presence</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-label">Symbolic Coherence (s)</div>
+                            <div class="metric-value" id="metric-s">-</div>
+                            <div class="metric-description">Meaning Density</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-label">Connection² (c²)</div>
+                            <div class="metric-value" id="metric-c">-</div>
+                            <div class="metric-description">Speed × Trust</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-label">Impact (I)</div>
+                            <div class="metric-value" id="metric-i">-</div>
+                            <div class="metric-description">Mnemonic Residue</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="section">
+                    <h3 class="section-title">Transcript Preview</h3>
+                    <div class="transcript-preview" id="transcript-preview"></div>
+                </div>
+                
+                <div class="section">
+                    <h3 class="section-title">Resonance Timeline</h3>
+                    <div id="timeline-chart"></div>
+                </div>
+                
+                <div class="export-section">
+                    <h3 style="margin-bottom: 1rem;">Export Mnemonic Signature</h3>
+                    <p style="margin-bottom: 1rem;">Download a JSON file containing all metrics and metadata for this session.</p>
+                    <button class="button" id="export-btn">📥 Download Signature JSON</button>
+                </div>
+            </div>
+        </main>
+        
+        <footer>
+            <p><strong>Mnemonic Deliberation Dashboard (MDD)</strong></p>
+            <p>© 2025 <a href="https://thenovacene.org" target="_blank">Kirstin Stevens</a> · The Novacene</p>
+            <p>This prototype operationalises the Law of Mnemonic Expansion in a Living Universe</p>
+            <p style="margin-top: 1rem;"><a href="https://doi.org/10.5281/zenodo.15465502" target="_blank">Stevens, K., & EVE11. (2025). The Verse-al Lexicon</a></p>
+            <p style="opacity: 0.7; font-size: 0.9rem; margin-top: 1rem;">Licence: CC BY-NC-SA 4.0</p>
+        </footer>
+    </div>
+    
+    <script>
+        // State
+        let transcriptData = null;
+        let mentimeterData = null;
+        let metrics = { E: 0, s: 0, c: 0, I: 0 };
+        
+        // File upload handling
+        const transcriptBox = document.getElementById('transcript-upload-box');
+        const transcriptInput = document.getElementById('transcript-file');
+        const transcriptInfo = document.getElementById('transcript-file-info');
+        
+        const mentimeterBox = document.getElementById('mentimeter-upload-box');
+        const mentimeterInput = document.getElementById('mentimeter-file');
+        const mentimeterInfo = document.getElementById('mentimeter-file-info');
+        
+        // Click to upload
+        transcriptBox.addEventListener('click', () => transcriptInput.click());
+        mentimeterBox.addEventListener('click', () => mentimeterInput.click());
+        
+        // Drag and drop
+        [transcriptBox, mentimeterBox].forEach(box => {
+            box.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                box.classList.add('drag-over');
+            });
+            
+            box.addEventListener('dragleave', () => {
+                box.classList.remove('drag-over');
+            });
+            
+            box.addEventListener('drop', (e) => {
+                e.preventDefault();
+                box.classList.remove('drag-over');
+                const input = box.querySelector('input[type="file"]');
+                input.files = e.dataTransfer.files;
+                input.dispatchEvent(new Event('change'));
+            });
+        });
+        
+        // File change handlers
+        transcriptInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                transcriptInfo.textContent = `📄 ${file.name} (${(file.size / 1024).toFixed(1)} KB)`;
+                transcriptInfo.classList.remove('hidden');
+                loadTranscript(file);
+            }
+        });
+        
+        mentimeterInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                mentimeterInfo.textContent = `📊 ${file.name} (${(file.size / 1024).toFixed(1)} KB)`;
+                mentimeterInfo.classList.remove('hidden');
+                loadMentimeter(file);
+            }
+        });
+        
+        // Load and parse transcript
+        function loadTranscript(file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const text = e.target.result;
+                const ext = file.name.split('.').pop().toLowerCase();
+                
+                if (ext === 'vtt') {
+                    transcriptData = parseVTT(text);
+                } else if (ext === 'srt') {
+                    transcriptData = parseSRT(text);
+                } else {
+                    transcriptData = parsePlainText(text);
+                }
+                
+                processTranscript();
+            };
+            reader.readAsText(file);
+        }
+        
+        // Parse plain text (Speaker: text format)
+        function parsePlainText(text) {
+            const lines = text.split('\n').filter(l => l.trim());
+            const turns = [];
+            
+            lines.forEach(line => {
+                const match = line.match(/^([^:]{1,40}):\s*(.+)$/);
+                if (match) {
+                    turns.push({
+                        speaker: match[1].trim(),
+                        text: match[2].trim(),
+                        ts_start: null,
+                        ts_end: null
+                    });
+                } else if (line.trim()) {
+                    turns.push({
+                        speaker: 'Unknown',
+                        text: line.trim(),
+                        ts_start: null,
+                        ts_end: null
+                    });
+                }
+            });
+            
+            return turns;
+        }
+        
+        // Basic VTT parser
+        function parseVTT(text) {
+            const turns = [];
+            const blocks = text.split('\n\n');
+            
+            blocks.forEach(block => {
+                const lines = block.split('\n');
+                if (lines.length >= 2) {
+                    const timeLine = lines.find(l => l.includes('-->'));
+                    if (timeLine) {
+                        const [start, end] = timeLine.split('-->').map(t => t.trim());
+                        const textLines = lines.slice(lines.indexOf(timeLine) + 1);
+                        const fullText = textLines.join(' ').trim();
+                        
+                        if (fullText) {
+                            const speakerMatch = fullText.match(/^([^:]{1,40}):\s*(.+)$/);
+                            turns.push({
+                                speaker: speakerMatch ? speakerMatch[1].trim() : 'Unknown',
+                                text: speakerMatch ? speakerMatch[2].trim() : fullText,
+                                ts_start: start,
+                                ts_end: end
+                            });
+                        }
+                    }
+                }
+            });
+            
+            return turns;
+        }
+        
+        // Basic SRT parser
+        function parseSRT(text) {
+            const turns = [];
+            const blocks = text.split('\n\n');
+            
+            blocks.forEach(block => {
+                const lines = block.split('\n').filter(l => l.trim());
+                if (lines.length >= 3) {
+                    const timeLine = lines[1];
+                    if (timeLine && timeLine.includes('-->')) {
+                        const [start, end] = timeLine.split('-->').map(t => t.trim());
+                        const textLines = lines.slice(2);
+                        const fullText = textLines.join(' ').trim();
+                        
+                        if (fullText) {
+                            const speakerMatch = fullText.match(/^([^:]{1,40}):\s*(.+)$/);
+                            turns.push({
+                                speaker: speakerMatch ? speakerMatch[1].trim() : 'Unknown',
+                                text: speakerMatch ? speakerMatch[2].trim() : fullText,
+                                ts_start: start,
+                                ts_end: end
+                            });
+                        }
+                    }
+                }
+            });
+            
+            return turns;
+        }
+        
+        // Process transcript and calculate metrics
+        function processTranscript() {
+            if (!transcriptData || transcriptData.length === 0) return;
+            
+            // Add derived fields
+            transcriptData.forEach(turn => {
+                turn.tokens = turn.text.split(/\s+/).length;
+                turn.duration_s = 0; // We'd need to parse timestamps properly
+            });
+            
+            // Calculate metrics
+            metrics.E = calculateEnergy(transcriptData);
+            metrics.s = calculateSymbolicCoherence(transcriptData);
+            metrics.c = calculateConnection(transcriptData);
+            metrics.I = (metrics.E * metrics.s) / Math.max(0.1, metrics.c * metrics.c);
+            
+            // Display results
+            displayResults();
+        }
+        
+        // Energy calculation (simplified)
+        function calculateEnergy(data) {
+            // Speaker balance (equity)
+            const speakerTokens = {};
+            let totalTokens = 0;
+            
+            data.forEach(turn => {
+                if (!speakerTokens[turn.speaker]) speakerTokens[turn.speaker] = 0;
+                speakerTokens[turn.speaker] += turn.tokens;
+                totalTokens += turn.tokens;
+            });
+            
+            // Calculate entropy (balance)
+            const speakers = Object.keys(speakerTokens);
+            let entropy = 0;
+            speakers.forEach(speaker => {
+                const p = speakerTokens[speaker] / totalTokens;
+                if (p > 0) entropy -= p * Math.log2(p);
+            });
+            
+            const maxEntropy = Math.log2(Math.max(1, speakers.length));
+            const equity = maxEntropy > 0 ? entropy / maxEntropy : 1.0;
+            
+            // Engagement proxy: token count normalized
+            const normTokens = Math.min(1.0, totalTokens / 5000);
+            
+            return 0.5 * normTokens + 0.5 * equity;
+        }
+        
+        // Symbolic coherence calculation (simplified)
+        function calculateSymbolicCoherence(data) {
+            const fullText = data.map(t => t.text).join(' ');
+            const words = fullText.toLowerCase().split(/\s+/);
+            
+            // Word variety (lexical diversity)
+            const uniqueWords = new Set(words.filter(w => w.length > 3));
+            const diversity = Math.min(1.0, uniqueWords.size / 200);
+            
+            // Jargon penalty
+            const jargon = ['operationalise', 'utilise', 'stakeholder', 'synergy', 'bandwidth', 'scalable'];
+            let jargonCount = 0;
+            jargon.forEach(j => {
+                jargonCount += (fullText.toLowerCase().match(new RegExp(j, 'g')) || []).length;
+            });
+            const jargonPenalty = 1 - Math.min(0.4, jargonCount * 0.05);
+            
+            // Average turn length (coherence proxy)
+            const avgLength = words.length / data.length;
+            const lengthScore = Math.min(1.0, avgLength / 50);
+            
+            return (0.5 * diversity + 0.5 * lengthScore) * jargonPenalty;
+        }
+        
+        // Connection calculation (simplified)
+        function calculateConnection(data) {
+            const fullText = data.map(t => t.text).join(' ').toLowerCase();
+            
+            // Misread markers
+            const misreadMarkers = [
+                "that's not what i said", "you've misunderstood", "to be clear",
+                "let me clarify", "i disagree", "misinterpret", "that's incorrect"
+            ];
+            
+            let misreads = 0;
+            misreadMarkers.forEach(marker => {
+                misreads += (fullText.match(new RegExp(marker, 'g')) || []).length;
+            });
+            
+            const totalTokens = data.reduce((sum, t) => sum + t.tokens, 0);
+            const misreadRate = (misreads / totalTokens) * 1000;
+            const misreadNorm = Math.min(1.0, misreadRate / 5.0);
+            
+            // Question ratio (inverse of velocity)
+            const questions = data.filter(t => t.text.trim().endsWith('?')).length;
+            const qRatio = questions / Math.max(1, data.length);
+            const velocity = 1 - qRatio;
+            
+            const c = 0.5 * (1 - misreadNorm) + 0.5 * velocity;
+            return Math.max(0.05, Math.min(1.0, c));
+        }
+        
+        // Display results
+        function displayResults() {
+            // Show results section
+            document.getElementById('results').classList.add('show');
+            
+            // Update metrics
+            document.getElementById('metric-e').textContent = metrics.E.toFixed(2);
+            document.getElementById('metric-s').textContent = metrics.s.toFixed(2);
+            document.getElementById('metric-c').textContent = metrics.c.toFixed(2);
+            document.getElementById('metric-i').textContent = metrics.I.toFixed(2);
+            
+            // Show transcript preview (first 20 turns)
+            const preview = document.getElementById('transcript-preview');
+            preview.innerHTML = '';
+            
+            transcriptData.slice(0, 20).forEach(turn => {
+                const row = document.createElement('div');
+                row.className = 'transcript-row';
+                row.innerHTML = `
+                    <div class="speaker">${turn.speaker}</div>
+                    <div class="time">${turn.ts_start || '-'}</div>
+                    <div class="text">${turn.text}</div>
+                `;
+                preview.appendChild(row);
+            });
+            
+            // Create timeline
+            createTimeline();
+            
+            // Scroll to results
+            document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        // Create timeline visualization
+        function createTimeline() {
+            if (transcriptData.length < 20) {
+                document.getElementById('timeline-chart').innerHTML = 
+                    '<div class="info-box">Not enough turns for timeline visualization. Upload a longer transcript.</div>';
+                return;
+            }
+            
+            const blockSize = 20;
+            const blocks = [];
+            
+            for (let i = 0; i < transcriptData.length; i += blockSize) {
+                const chunk = transcriptData.slice(i, i + blockSize);
+                if (chunk.length > 0) {
+                    blocks.push({
+                        block: i,
+                        E: calculateEnergy(chunk),
+                        s: calculateSymbolicCoherence(chunk),
+                        c: calculateConnection(chunk)
+                    });
+                }
+            }
+            
+            blocks.forEach(b => {
+                b.I = (b.E * b.s) / Math.max(0.1, b.c * b.c);
+            });
+            
+            const trace_E = {
+                x: blocks.map(b => b.block),
+                y: blocks.map(b => b.E),
+                name: 'Energy (E)',
+                type: 'scatter',
+                mode: 'lines+markers'
+            };
+            
+            const trace_s = {
+                x: blocks.map(b => b.block),
+                y: blocks.map(b => b.s),
+                name: 'Symbolic Coherence (s)',
+                type: 'scatter',
+                mode: 'lines+markers'
+            };
+            
+            const trace_c = {
+                x: blocks.map(b => b.block),
+                y: blocks.map(b => b.c),
+                name: 'Connection (c)',
+                type: 'scatter',
+                mode: 'lines+markers'
+            };
+            
+            const trace_I = {
+                x: blocks.map(b => b.block),
+                y: blocks.map(b => b.I),
+                name: 'Impact (I)',
+                type: 'scatter',
+                mode: 'lines+markers'
+            };
+            
+            const layout = {
+                title: 'Mnemonic Metrics Over Time',
+                xaxis: { title: 'Turn Block Start' },
+                yaxis: { title: 'Score', range: [0, 1] },
+                showlegend: true
+            };
+            
+            Plotly.newPlot('timeline-chart', [trace_E, trace_s, trace_c, trace_I], layout);
+        }
+        
+        // Export functionality
+        document.getElementById('export-btn').addEventListener('click', function() {
+            const signature = {
+                session_meta: {
+                    generated_at: new Date().toISOString(),
+                    turns: transcriptData.length,
+                    speakers: new Set(transcriptData.map(t => t.speaker)).size
+                },
+                metrics: {
+                    E: metrics.E,
+                    s: metrics.s,
+                    c: metrics.c,
+                    I: metrics.I
+                },
+                mentimeter_included: mentimeterData !== null
+            };
+            
+            const blob = new Blob([JSON.stringify(signature, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `mnemonic_signature_${Date.now()}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        });
+        
+        // Mentimeter loading (placeholder)
+        function loadMentimeter(file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                // Simple CSV parsing would go here
+                // For now, just acknowledge it was loaded
+                mentimeterData = { loaded: true };
+                console.log('Mentimeter data loaded (parsing not fully implemented)');
+            };
+            reader.readAsText(file);
+        }
+    </script>
+</body>
+</html>
