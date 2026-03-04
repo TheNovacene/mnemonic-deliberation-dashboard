@@ -1013,18 +1013,85 @@ Or just paste any text and it will be analyzed."></textarea>
         
         // Extract concepts
         function extractConcepts(text, minLength = 4) {
-            const words = text.toLowerCase()
+            const normalized = text.toLowerCase()
                 .replace(/[^\w\s-]/g, ' ')
-                .split(/\s+/)
-                .filter(w => w.length >= minLength);
+                .replace(/\s+/g, ' ');
             
+            // Comprehensive stop words - functional/meaningless terms
             const stopWords = new Set([
-                'that', 'this', 'with', 'from', 'they', 'have', 'been', 
-                'were', 'will', 'would', 'could', 'should', 'about', 'what',
-                'when', 'where', 'which', 'their', 'there', 'these', 'those'
+                // Pronouns
+                'i', 'me', 'my', 'mine', 'myself', 'you', 'your', 'yours', 'yourself',
+                'he', 'him', 'his', 'himself', 'she', 'her', 'hers', 'herself',
+                'it', 'its', 'itself', 'we', 'us', 'our', 'ours', 'ourselves',
+                'they', 'them', 'their', 'theirs', 'themselves',
+                // Common verbs with no semantic weight
+                'is', 'am', 'are', 'was', 'were', 'be', 'been', 'being',
+                'have', 'has', 'had', 'having', 'do', 'does', 'did', 'doing',
+                'will', 'would', 'could', 'should', 'may', 'might', 'must',
+                'can', 'cant', 'cannot', 'shall', 'ought',
+                // Generic connectors
+                'and', 'or', 'but', 'if', 'then', 'else', 'when', 'where',
+                'why', 'how', 'what', 'which', 'who', 'whom', 'whose',
+                'that', 'this', 'these', 'those', 'such',
+                // Prepositions
+                'at', 'by', 'for', 'from', 'in', 'into', 'of', 'on', 'onto',
+                'out', 'over', 'to', 'up', 'with', 'as', 'about', 'against',
+                'between', 'through', 'during', 'before', 'after', 'above',
+                'below', 'between', 'under', 'again', 'further', 'once',
+                // Generic nouns/adjectives
+                'thing', 'things', 'something', 'anything', 'everything', 'nothing',
+                'people', 'person', 'someone', 'anyone', 'everyone', 'nobody',
+                'way', 'ways', 'time', 'times', 'like', 'just', 'also',
+                'very', 'really', 'quite', 'rather', 'pretty', 'much', 'many',
+                'more', 'most', 'some', 'any', 'each', 'every', 'both', 'few',
+                'other', 'another', 'same', 'different', 'such', 'only', 'own',
+                // Conversational fillers
+                'yeah', 'yes', 'no', 'okay', 'ok', 'well', 'now', 'here', 'there',
+                'so', 'because', 'since', 'though', 'although', 'however',
+                'therefore', 'thus', 'hence', 'said', 'says', 'saying',
+                // Articles & determiners
+                'a', 'an', 'the'
             ]);
             
-            return words.filter(w => !stopWords.has(w));
+            const words = normalized.split(/\s+/).filter(w => w.length >= minLength);
+            const concepts = [];
+            
+            // Single words (filtered)
+            words.forEach(word => {
+                if (!stopWords.has(word) && word.length >= minLength) {
+                    concepts.push(word);
+                }
+            });
+            
+            // Bigrams (2-word phrases) - these often carry more charge
+            for (let i = 0; i < words.length - 1; i++) {
+                const w1 = words[i];
+                const w2 = words[i + 1];
+                
+                if (!stopWords.has(w1) && !stopWords.has(w2)) {
+                    const phrase = `${w1} ${w2}`;
+                    if (phrase.length >= 8) { // Meaningful length
+                        concepts.push(phrase);
+                    }
+                }
+            }
+            
+            // Trigrams (3-word phrases) - even more selective
+            for (let i = 0; i < words.length - 2; i++) {
+                const w1 = words[i];
+                const w2 = words[i + 1];
+                const w3 = words[i + 2];
+                
+                // Allow some stop words in the middle of phrases
+                if (!stopWords.has(w1) && !stopWords.has(w3)) {
+                    const phrase = `${w1} ${w2} ${w3}`;
+                    if (phrase.length >= 12) {
+                        concepts.push(phrase);
+                    }
+                }
+            }
+            
+            return concepts;
         }
         
         // Build network
@@ -1038,7 +1105,12 @@ Or just paste any text and it will be analyzed."></textarea>
                 
                 uniqueConcepts.forEach(concept => {
                     if (!concepts.has(concept)) {
-                        concepts.set(concept, { count: 0, speakers: new Set(), positions: [] });
+                        concepts.set(concept, { 
+                            count: 0, 
+                            speakers: new Set(), 
+                            positions: [],
+                            isPhrase: concept.includes(' ')
+                        });
                     }
                     const info = concepts.get(concept);
                     info.count++;
@@ -1054,10 +1126,17 @@ Or just paste any text and it will be analyzed."></textarea>
                 }
             });
             
+            // Sort by count, but weight phrases more heavily
             const topConcepts = [...concepts.entries()]
-                .sort((a, b) => b[1].count - a[1].count)
+                .map(([concept, info]) => ({
+                    id: concept,
+                    ...info,
+                    // Boost score for phrases
+                    adjustedCount: info.isPhrase ? info.count * 1.5 : info.count
+                }))
+                .sort((a, b) => b.adjustedCount - a.adjustedCount)
                 .slice(0, 50)
-                .map(([concept, info]) => ({ id: concept, ...info }));
+                .map(({ adjustedCount, ...rest }) => rest); // Remove adjusted count
             
             const conceptSet = new Set(topConcepts.map(c => c.id));
             const links = [];
