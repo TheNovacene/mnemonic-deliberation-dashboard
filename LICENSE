@@ -1,18 +1,18 @@
-© 2025 Kirstin Stevens · The Novacene  
-All rights reserved.
+# Licence — Mnemonic Deliberation Dashboard
 
-This repository contains proprietary research and prototype software 
-developed by Kirstin Stevens as part of *The Novacene* and the 
-*Law of Mnemonic Expansion* research under the Verse-ality framework.
+This repository uses a **two-tier licence model**:
 
-Viewing and personal experimentation are permitted for non-commercial 
-educational and research purposes only. Reuse, reproduction, modification, 
-distribution, or integration of this software or its underlying concepts 
-in any form—digital, academic, or commercial—without explicit written 
-permission from the author is strictly prohibited.
+- **Public layer** (`/docs`, `/samples`, README, public-facing materials):
+  Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0).
+  See [LICENSE-PUBLIC](./LICENSE-PUBLIC) for the full text.
 
-To discuss research access, licensing, or collaboration:
+- **Private engine** (`/src`, `/data`, proprietary computation logic and pipelines):
+  Proprietary. All rights reserved by The Novacene Ltd.
+  See [LICENSE-PRIVATE](./LICENSE-PRIVATE) for terms.
+
+This split mirrors the licensing pattern used in `mnemonic-attendance` — the public layer is open for non-commercial educational and research use, while the underlying computation engine is proprietary and available under commercial licence or research partnership.
+
+For licensing enquiries, partnership, or research access:
 📩 hello@thenovacene.com
 
-This work is symbolically protected under the Verse-ality code of ethics.  
-Use implies consent to honour the integrity of its relational field.
+© 2025–2026 Kirstin Stevens · The Novacene Ltd. "Verse-ality" is a protected mark (UK00004381891 filed 1 May 2026).
