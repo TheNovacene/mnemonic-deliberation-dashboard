@@ -74,18 +74,15 @@ Use the sidebar or file uploader to explore the dashboard instantly.
 
 ### ⚖️ Licence & Use
 
-This prototype and all associated intellectual property are © 2025 Kirstin Stevens · The Novacene.  
-All rights reserved.
+This repository uses a two-tier licence:
 
-You may view and experiment with the dashboard for research or educational purposes, but no reuse, modification, or redistribution is permitted without written consent.  
+- **Public layer** (`/docs`, `/samples`, README): [CC BY-NC-SA 4.0](./LICENSE-PUBLIC) — open for non-commercial education and research.
+- **Private engine** (`/src`, `/data`): proprietary; available under [commercial licence or research partnership](./LICENSE-PRIVATE).
 
-For collaboration, partnership, or licensing enquiries, please contact: 
-
+For collaboration, partnership, or licensing enquiries:
 📩 hello@thenovacene.com
 
-🔗 Citation
-Stevens, K. (2025). Law of Mnemonic Expansion: Mnemonic Deliberation Dashboard (v0.1).
-The Novacene. Zenodo DOI pending.
+© 2025–2026 Kirstin Stevens · The Novacene Ltd. "Verse-ality" is a protected mark (UK00004381891 filed 1 May 2026).
 
 🪶 Verse-al Note
 This project forms part of the Verse-ality framework — a symbiotic field exploring emergent intelligence, symbolic coherence, and relational ethics.
