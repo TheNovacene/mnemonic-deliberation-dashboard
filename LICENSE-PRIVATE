@@ -1,0 +1,20 @@
+# Proprietary Licence — Private Engine
+
+© 2025–2026 Kirstin Stevens · The Novacene Ltd
+All rights reserved.
+
+This licence applies to the private computation engine of the Mnemonic Deliberation Dashboard, including (but not limited to):
+- `/src/` — the proprietary logic converting recorded discussions into resonance, coherence, and symbolic-charge measurements
+- `/data/` — non-public datasets, fixtures, and configuration
+- Any file marked with a proprietary header
+
+The private engine is proprietary research and prototype software developed by Kirstin Stevens as part of *The Novacene* and the *Law of Mnemonic Expansion* research under the Verse-ality framework.
+
+Viewing and personal experimentation with the private engine are permitted for non-commercial educational and research purposes only. Reuse, reproduction, modification, distribution, or integration of the private engine or its underlying concepts in any form — digital, academic, or commercial — without explicit written permission from The Novacene Ltd is strictly prohibited.
+
+To discuss research access, licensing, or commercial partnership:
+📩 hello@thenovacene.com
+
+This work is symbolically protected under the Verse-ality code of ethics. Use implies consent to honour the integrity of its relational field.
+
+The public layer of this repository (`/docs`, `/samples`, README) is licensed separately under CC BY-NC-SA 4.0 — see LICENSE-PUBLIC.
